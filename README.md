@@ -16,7 +16,7 @@ Using handlebars-loader to require templates and partials adds them to a local i
 
 All templates and partials are PRE-COMPILED.  Just like jade-loader, the pre-compiled templates and a minimal Handlebars runtime ONLY are added to your script by webpack, so the size of the final output is minimal and the runtime performance of using the templates is maximal.
 
-See `webpack` documentation for more information regarding loaders.
+See [`webpack`](https://github.com/webpack/webpack) documentation for more information regarding loaders.
 
 ## Full example
 
