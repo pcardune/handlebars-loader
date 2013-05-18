@@ -16,6 +16,8 @@ Using handlebars-loader to require templates and partials adds them to a local i
 
 All templates and partials are PRE-COMPILED.  Just like jade-loader, the pre-compiled templates and a minimal Handlebars runtime ONLY are added to your script by webpack, so the size of the final output is minimal and the runtime performance of using the templates is maximal.
 
+The filename, e.g. file.handlebars, determines the template key used. For example, file.txt.handlebars results in Handlebars.templates['file.txt'] being added.  The same goes for partials: if you use `require("handlebars?partial!your-partial.handlebars")`, you would reference `{{^your-partial}}` to get at it, as the key is derived from the filename.
+
 See [`webpack`](https://github.com/webpack/webpack) documentation for more information regarding loaders.
 
 ## Full example
