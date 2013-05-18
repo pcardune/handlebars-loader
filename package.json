@@ -1,0 +1,21 @@
+{
+  "name": "handlebars-loader",
+  "version": "0.0.1",
+  "author": {
+    "name": "Alan Norbauer"
+  },
+  "description": "handlebars loader module for webpack",
+  "dependencies": {
+    "loader-utils": "0.2.x",
+    "handlebars": "git://github.com/spikebrehm/handlebars.js.git#0687c7016c62122ab160a8683817a931b03354ad" // Fork of handlebars.js that allows commonjs inclusion of the script. Will be merged back into handlebars.js soon enough...
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://www.opensource.org/licenses/mit-license"
+    }
+  ],
+  "readmeFilename": "README.md",
+  "_id": "handlebars-loader@0.0.1",
+  "_from": "handlebars-loader@~0.0.1"
+}
