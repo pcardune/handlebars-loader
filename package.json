@@ -2,7 +2,7 @@
   "name": "handlebars-loader",
   "version": "0.0.2",
   "author": {
-    "name": "Alan Norbauer"
+    "name": "Alan"
   },
   "description": "handlebars loader module for webpack",
   "dependencies": {
