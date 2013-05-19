@@ -75,7 +75,7 @@ webpack: {
 </div>
 ```
 
-### book.handlebars (a partial)
+### book.partial.handlebars (a partial referenced in the template above)
 ```html
 <h1>{{title}}</h1>
 <div>
@@ -85,8 +85,8 @@ webpack: {
 
 ### your.script.that.uses.the.templates.js
 ```javascript
-require("handlebars?partial!book.handlebars");
-var bookListingTemplate = require("handlebars!book-listing.handlebars"); // this template can render using the partial above
+require("book.partial.handlebars");
+var bookListingTemplate = require("book-listing.handlebars"); // this template can render using the partial above
 ```
 
 ## License
