@@ -14,23 +14,21 @@ module.exports = function(content) {
   var query = loaderUtils.parseQuery(this.query);
 
   var templateName;
-  if (query.key && query.key.length && query.key.length > 0) {
+  if (query.key && query.key.length && query.key.length > 0)
     templateName = query.key;
-  }
-  else if (query.partial && query.partial.length && query.partial.length > 0) {
+  else if (query.partial && query.partial.length && query.partial.length > 0)
     templateName = query.partial;
-  }
-  else {
+  else
     templateName = path.basename(this.resourcePath);
-    templateName = templateName.replace(/\.partial\.handlebars$/, '');
-    templateName = templateName.replace(/\.handlebars$/, '');
-  }
+
+  templateName = templateName.replace(/\.handlebars$/, '');
 
   var options = {
     partial: !!query.partial,
     minimize: !!this.minimize,
     runtimePath: query.runtimePath,
     namespace: query.namespace
+
   };
 
   return generateTemplateExport(content, templateName, options);
@@ -57,6 +55,10 @@ var generateTemplateExport = function(source, templateName, options) {
   var handlebarsOptions = {
     knownHelpersOnly: true
   };
+
+  // Clean the template name
+  templateName = basename(templateName);
+  templateName = templateName.replace(/\.handlebars$/, '');
 
   output.push('module.exports = ');
   if (options.partial) {
