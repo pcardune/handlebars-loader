@@ -1,13 +1,13 @@
 {
   "name": "handlebars-loader",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": {
     "name": "Alan Norbauer"
   },
   "description": "handlebars loader module for webpack",
   "dependencies": {
-    "uglify-js": "~1.2",
     "loader-utils": "0.2.x",
+    "uglify-js": "~2.3.4",
     "handlebars": "git://github.com/spikebrehm/handlebars.js.git#0687c7016c62122ab160a8683817a931b03354ad"
   },
   "licenses": [
