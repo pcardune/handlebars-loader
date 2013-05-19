@@ -1,6 +1,6 @@
 {
   "name": "handlebars-loader",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": {
     "name": "Alan"
   },
@@ -17,6 +17,6 @@
     }
   ],
   "readmeFilename": "README.md",
-  "_id": "handlebars-loader@0.0.1",
-  "_from": "handlebars-loader@~0.0.1"
+  "_id": "handlebars-loader@0.0.3",
+  "_from": "handlebars-loader@~0.0.3"
 }
