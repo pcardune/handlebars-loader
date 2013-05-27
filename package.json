@@ -16,6 +16,7 @@
       "url": "http://www.opensource.org/licenses/mit-license"
     }
   ],
+  "repository"    : {"type": "git", "url": "git://github.com/altano/handlebars-loader.git"},
   "readmeFilename": "README.md",
   "_id": "handlebars-loader@0.0.3",
   "_from": "handlebars-loader@~0.0.3"
