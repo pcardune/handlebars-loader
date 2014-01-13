@@ -1,5 +1,5 @@
 var loaderUtils = require("loader-utils"),
-    handlebars = require("handlebars/lib/handlebars"),
+    handlebars = require("handlebars"),
     path = require("path"),
     basename = path.basename,
     UglifyJS = require("uglify-js");
@@ -43,11 +43,11 @@ module.exports.seperable = true;
 // source from webpack instead of a path to the file. This makes handlebars-
 // loader a chainable loader, with source-as-input and source-as-output.
 var generateTemplateExport = function(source, templateName, options) {
-  var runtimePath = JSON.stringify(options.runtimePath || path.join(__dirname, "node_modules", "handlebars", "dist", "handlebars.runtime"));
+  var runtimePath = JSON.stringify(options.runtimePath || path.join(__dirname, "node_modules", "handlebars", "runtime"));
   var namespace = options.namespace || 'Handlebars.namespace';
 
   var output = [];
-  output.push('var Handlebars = require(' + runtimePath + ');\n');
+  output.push('var Handlebars = require(' + runtimePath + ').default;\n');
   output.push('  var template = Handlebars.template, templates = ');
   output.push(namespace);
   output.push(' = ');
