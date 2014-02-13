@@ -1,97 +1,113 @@
-var loaderUtils = require("loader-utils"),
-    handlebars = require("handlebars"),
-    path = require("path"),
-    basename = path.basename,
-    UglifyJS = require("uglify-js");
+var loaderUtils = require("loader-utils");
+var handlebars = require("handlebars");
+var async = require("async");
 
-module.exports = function(content) {
-  if (this.cacheable)
-    this.cacheable();
+module.exports = function(source) {
+	if(this.cacheable) this.cacheable();
+	var loaderApi = this;
+	var query = loaderUtils.parseQuery(this.query);
+	var runtimePath = require.resolve("handlebars/runtime");
 
-  if (typeof content !== "string")
-    throw new Error("Expecting content to be a string, got '" + typeof content + "'");
+	// Possible extensions for partials
+	var extensions = query.extensions;
+	if(extensions && !Array.isArray(extensions)) extensions = extensions.split(/[ ,;]/g);
+	if(!extensions) extensions = [".handlebars", ".hbs", ""];
 
-  var query = loaderUtils.parseQuery(this.query);
+	var foundPartials = {};
+	var foundHelpers = {};
+	var foundUnclearStuff = {};
+	var knownHelpers = {};
 
-  var templateName;
-  if (query.key && query.key.length && query.key.length > 0) {
-    templateName = query.key;
-  }
-  else if (query.partial && query.partial.length && query.partial.length > 0) {
-    templateName = query.partial;
-  }
-  else {
-    templateName = path.basename(this.resourcePath);
-    templateName = templateName.replace(/\.partial\.handlebars$/, '');
-    templateName = templateName.replace(/\.handlebars$/, '');
-  }
+	var hb = handlebars.create();
+	var JavaScriptCompiler = hb.JavaScriptCompiler;
+	function MyJavaScriptCompiler() {
+		JavaScriptCompiler.apply(this, arguments);
+	}
+	MyJavaScriptCompiler.prototype = Object.create(JavaScriptCompiler.prototype);
+	MyJavaScriptCompiler.prototype.compiler = MyJavaScriptCompiler;
+	MyJavaScriptCompiler.prototype.nameLookup = function(parent, name, type) {
+		if(type === "partial") {
+			if(foundPartials["$" + name]) {
+				return "require(" + JSON.stringify(foundPartials["$" + name]) + ")";
+			}
+			foundPartials["$" + name] = null;
+			return JavaScriptCompiler.prototype.nameLookup.call(this, parent, name, type);
+		} else if(type === "helper") {
+			if(foundHelpers["$" + name]) {
+				return "require(" + JSON.stringify(foundHelpers["$" + name]) + ")";
+			}
+			return JavaScriptCompiler.prototype.nameLookup.call(this, parent, name, type);
+		} else if(type === "context") {
+			// This could be a helper too, save it to check it later
+			if(!foundUnclearStuff["$" + name]) foundUnclearStuff["$" + name] = false;
+			return JavaScriptCompiler.prototype.nameLookup.call(this, parent, name, type);
+		} else return JavaScriptCompiler.prototype.nameLookup.call(this, parent, name, type);
+	};
+	hb.JavaScriptCompiler = MyJavaScriptCompiler;
 
-  var options = {
-    partial: !!query.partial,
-    minimize: !!this.minimize,
-    runtimePath: query.runtimePath,
-    namespace: query.namespace
-  };
+	// This is an async loader
+	var callback = this.async();
 
-  return generateTemplateExport(content, templateName, options);
+	(function compile() {
+		// Need another compiler pass?
+		var needRecompile = false;
+
+		// Precompile template
+		var template = hb.precompile(source, {
+			knownHelpersOnly: true,
+			knownHelpers: knownHelpers
+		});
+
+		// Check for each found unclear item if it is a helper
+		async.forEach(Object.keys(foundUnclearStuff), function(stuff, callback) {
+			if(foundUnclearStuff[stuff]) return callback();
+			var request = referenceToRequest(stuff.substr(1));
+			loaderApi.resolve(loaderApi.context, request, function(err, result) {
+				if(!err && result) {
+					knownHelpers[stuff.substr(1)] = true;
+					foundHelpers[stuff] = result;
+					needRecompile = true;
+				}
+				foundUnclearStuff[stuff] = true;
+				callback();
+			});
+		}, function() {
+
+			// Resolve path for each partial
+			async.forEach(Object.keys(foundPartials), function(partial, callback) {
+				if(foundPartials[partial]) return callback();
+				var request = referenceToRequest(partial.substr(1));
+
+				// Try every extension for partials
+				var i = 0;
+				(function tryExtension() {
+					if(i > extensions.length) return callback(new Error("Partial '" + partial.substr(1) + "' not found"));
+					var extension = extensions[i++];
+					loaderApi.resolve(loaderApi.context, request + extension, function(err, result) {
+						if(!err && result) {
+							foundPartials[partial] = result;
+							needRecompile = true;
+							return callback();
+						}
+						tryExtension();
+					});
+				}());
+			}, function(err) {
+				if(err) return callback(err);
+
+				// Do another compiler pass if not everything was resolved
+				if(needRecompile) return compile();
+
+				// export as module
+				callback(null, 'module.exports = require(' + JSON.stringify(runtimePath) + ').default.template(' + template + ');');
+			});
+		});
+	}());
 };
 
-module.exports.seperable = true;
-
-// A webpack-relevant subset of ./bin/handlebars console script, but without
-// the need to call a command line script.  Also allows us to pass in the
-// source from webpack instead of a path to the file. This makes handlebars-
-// loader a chainable loader, with source-as-input and source-as-output.
-var generateTemplateExport = function(source, templateName, options) {
-  var runtimePath = JSON.stringify(options.runtimePath || path.join(__dirname, "node_modules", "handlebars", "runtime"));
-  var namespace = options.namespace || 'Handlebars.namespace';
-
-  var output = [];
-  output.push('var Handlebars = require(' + runtimePath + ').default;\n');
-  output.push('  var template = Handlebars.template, templates = ');
-  output.push(namespace);
-  output.push(' = ');
-  output.push(namespace);
-  output.push(' || {};\n');
-
-  var handlebarsOptions = {
-    knownHelpersOnly: true
-  };
-
-  output.push('module.exports = ');
-  if (options.partial) {
-    output.push('Handlebars.partials[\'' + templateName + '\'] = template(' + handlebars.precompile(source, handlebarsOptions) + ');\n');
-  }
-  else {
-    output.push('templates[\'' + templateName + '\'] = template(' + handlebars.precompile(source, handlebarsOptions) + ');\n');
-  }
-
-  output = output.join('');
-
-  if (options.minimize) {
-    output = uglify(output);
-  }
-
-  return output;
-};
-
-var uglify = function(content) {
-  var ast = UglifyJS.parse(content);
-
-  // compressor needs figure_out_scope too
-  ast.figure_out_scope();
-  var compressorOptions = {
-    warnings: false // Compressing the Handlebars templates is too noisy b/c there are
-                    // almost always unused function parameters in the generated template
-  };
-  compressor = UglifyJS.Compressor(compressorOptions);
-  ast = ast.transform(compressor);
-
-  // need to figure out scope again so mangler works optimally
-  ast.figure_out_scope();
-  ast.compute_char_frequency();
-  ast.mangle_names();
-
-  // get Ugly content back :)
-  return ast.print_to_string();
-};
+function referenceToRequest(ref) {
+    if(/^~/.test(ref))
+        return ref.substring(1);
+    else
+        return "./"+ref;
+}
