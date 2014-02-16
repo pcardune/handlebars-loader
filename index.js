@@ -1,8 +1,7 @@
 var loaderUtils = require("loader-utils"),
     handlebars = require("handlebars"),
     path = require("path"),
-    basename = path.basename,
-    UglifyJS = require("uglify-js");
+    basename = path.basename;
 
 module.exports = function(content) {
   if (this.cacheable)
@@ -24,11 +23,11 @@ module.exports = function(content) {
     templateName = path.basename(this.resourcePath);
     templateName = templateName.replace(/\.partial\.handlebars$/, '');
     templateName = templateName.replace(/\.handlebars$/, '');
+    templateName = templateName.replace(/\.hbs$/, '');
   }
 
   var options = {
     partial: !!query.partial,
-    minimize: !!this.minimize,
     runtimePath: query.runtimePath,
     namespace: query.namespace
   };
@@ -36,6 +35,7 @@ module.exports = function(content) {
   return generateTemplateExport(content, templateName, options);
 };
 
+// @TODO This typo in webpack was fixed in 0.8, but I don't see it in the docs anymore. What was it for and is it still needed?
 module.exports.seperable = true;
 
 // A webpack-relevant subset of ./bin/handlebars console script, but without
@@ -68,30 +68,5 @@ var generateTemplateExport = function(source, templateName, options) {
 
   output = output.join('');
 
-  if (options.minimize) {
-    output = uglify(output);
-  }
-
   return output;
-};
-
-var uglify = function(content) {
-  var ast = UglifyJS.parse(content);
-
-  // compressor needs figure_out_scope too
-  ast.figure_out_scope();
-  var compressorOptions = {
-    warnings: false // Compressing the Handlebars templates is too noisy b/c there are
-                    // almost always unused function parameters in the generated template
-  };
-  compressor = UglifyJS.Compressor(compressorOptions);
-  ast = ast.transform(compressor);
-
-  // need to figure out scope again so mangler works optimally
-  ast.figure_out_scope();
-  ast.compute_char_frequency();
-  ast.mangle_names();
-
-  // get Ugly content back :)
-  return ast.print_to_string();
 };
