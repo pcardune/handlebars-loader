@@ -6,13 +6,13 @@ A [`handlebars`](http://handlebarsjs.com) template loader for [`webpack`](https:
 
 ### webpack configuration
 
-``` javascript
+```javascript
 {
   ...
   module: {
     loaders: [
       ...
-      { test: /\.handlebars$/, loader: "handlebars" }
+      { test: /\.handlebars$/, loader: "handlebars-loader" }
     ]
   }
 }
@@ -20,22 +20,22 @@ A [`handlebars`](http://handlebarsjs.com) template loader for [`webpack`](https:
 
 ### Your JS making use of the templates
 
-``` javascript
+```javascript
 var template = require("./file.handlebars");
-// => returns file.handlebars content as template function
+// => returns file.handlebars content as a template function
 ```
 
 ## Details
 
-The loader resolves partials and helpers automatically. They are looked up relative to the current directory, or as module if you prefix `~`.
+The loader resolves partials and helpers automatically. They are looked up relative to the current directory or as a module if you prefix with `~`.
 
-``` handlebars
+```handlebars
 A file "/folder/file.handlebars".
 {{> partial}} will reference "/folder/partial.handlebars".
 {{> ../partial}} will reference "/partial.handlebars".
 {{> ~module/partial}} will reference "/folder/node_modules/module/partial.handlebars".
 {{helper}} will reference the helper "/folder/helper.js" if this file exists.
-{{../helper}} {{~module/helper}} similar to partials.
+{{../helper}} {{~module/helper}} are resolved similarly to partials.
 ```
 
 See [`webpack`](https://github.com/webpack/webpack) documentation for more information regarding loaders.
