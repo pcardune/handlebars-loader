@@ -23,5 +23,6 @@
   "repository": {
     "type": "git",
     "url": "git://github.com/altano/handlebars-loader.git"
-  }
+  },
+  "version": "0.1.0"
 }
