@@ -1,6 +1,7 @@
 var loaderUtils = require("loader-utils");
 var handlebars = require("handlebars");
 var async = require("async");
+var util = require("util");
 
 module.exports = function(source) {
 	if (this.cacheable) this.cacheable();
@@ -55,7 +56,7 @@ module.exports = function(source) {
 	hb.JavaScriptCompiler = MyJavaScriptCompiler;
 
 	// This is an async loader
-	var callback = this.async();
+	var loaderAsyncCallback = this.async();
 
 	(function compile() {
 		// Need another compiler pass?
@@ -68,8 +69,8 @@ module.exports = function(source) {
 		});
 
 		// Check for each found unclear item if it is a helper
-		async.forEach(Object.keys(foundUnclearStuff), function(stuff, callback) {
-			if (foundUnclearStuff[stuff]) return callback();
+		async.forEach(Object.keys(foundUnclearStuff), function(stuff, unclearStuffCallback) {
+			if (foundUnclearStuff[stuff]) return unclearStuffCallback();
 			var request = referenceToRequest(stuff.substr(1));
 			loaderApi.resolve(loaderApi.context, request, function(err, result) {
 				if (!err && result) {
@@ -78,36 +79,45 @@ module.exports = function(source) {
 					needRecompile = true;
 				}
 				foundUnclearStuff[stuff] = true;
-				callback();
+				unclearStuffCallback();
 			});
 		}, function() {
 
 			// Resolve path for each partial
-			async.forEach(Object.keys(foundPartials), function(partial, callback) {
-				if (foundPartials[partial]) return callback();
+			async.forEach(Object.keys(foundPartials), function(partial, partialCallback) {
+				if (foundPartials[partial]) return partialCallback();
 				var request = referenceToRequest(partial.substr(1));
 
 				// Try every extension for partials
-				var foundExtension = extensions.some(function(extension) {
+				var i = 0;
+				(function tryExtension() {
+					var errorMsg = util.format("Partial '%s' not found", partial.substr(1));
+					if (i > extensions.length) return partialCallback(new Error(errorMsg));
+					var extension = extensions[i++];
+
+					if (this.debug) {
+						var path = require("path");
+						var partialTrace = path.normalize(loaderApi.context + "\\" + request + extension);
+						this.emitWarning("Attempting to resolve %s", partialTrace);
+					}
+
 					loaderApi.resolve(loaderApi.context, request + extension, function(err, result) {
 						if (!err && result) {
 							foundPartials[partial] = result;
 							needRecompile = true;
-							callback();
-							return true;
+							return partialCallback();
 						}
+						tryExtension();
 					});
-				});
-
-				if (!foundExtension) callback(new Error("Partial '" + partial.substr(1) + "' not found"));
+				}());
 			}, function(err) {
-				if (err) return callback(err);
+				if (err) return loaderAsyncCallback(err);
 
 				// Do another compiler pass if not everything was resolved
 				if (needRecompile) return compile();
 
 				// export as module
-				callback(null, 'module.exports = require(' + JSON.stringify(runtimePath) + ').default.template(' + template + ');');
+				loaderAsyncCallback(null, 'module.exports = require(' + JSON.stringify(runtimePath) + ').default.template(' + template + ');');
 			});
 		});
 	}());
