@@ -42,7 +42,7 @@ See [`webpack`](https://github.com/webpack/webpack) documentation for more infor
 
 ## Full example
 
-See example folder in this repo.
+See example folder in this repo. The example is now fully runnable and demonstrates a number of concepts (using partials and helpers) -- just run `webpack` in that directory to produce dist/bundle.js in the same folder.
 
 ## License
 

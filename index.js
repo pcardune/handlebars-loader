@@ -2,6 +2,7 @@ var loaderUtils = require("loader-utils");
 var handlebars = require("handlebars");
 var async = require("async");
 var util = require("util");
+var path = require("path");
 
 module.exports = function(source) {
 	if (this.cacheable) this.cacheable();
@@ -44,7 +45,6 @@ module.exports = function(source) {
 			return JavaScriptCompiler.prototype.nameLookup.apply(this, arguments);
 		}
 		else if (type === "helper") {
-			debugger;
 			if (foundHelpers["$" + name]) {
 				return "require(" + JSON.stringify(foundHelpers["$" + name]) + ")";
 			}
@@ -82,10 +82,45 @@ module.exports = function(source) {
 			knownHelpers: knownHelpers
 		});
 
+		var resolve = function(request, type, callback) {
+			var contexts = [loaderApi.context];
+
+			// @TODO Get rid of this if @sokra updates webpack to do it as part of loaderApi.resolve()
+			if (loaderApi.options.resolve.fallback) {
+				contexts.push(loaderApi.options.resolve.fallback);
+			}
+
+			var resolveWithContexts = function() {
+				var context = contexts.shift();
+
+				var traceMsg;
+				if (debug) {
+					traceMsg = path.normalize(context + "\\" + request);
+					console.log("Attempting to resolve %s %s", type, traceMsg);
+				}
+
+				loaderApi.resolve(context, request, function(err, result) {
+					if (!err && result) {
+						if (debug) console.log("Resolved %s %s", type, traceMsg);
+						return callback(err, result);
+					}
+					else if (contexts.length > 0) {
+						resolveWithContexts();
+					}
+					else {
+						if (debug) console.log("Failed to resolve %s %s", type, traceMsg);
+						return callback(err, result);
+					}
+				});
+			};
+
+			resolveWithContexts();
+		};
+
 		var resolveUnclearStuffIterator = function(stuff, unclearStuffCallback) {
 			if (foundUnclearStuff[stuff]) return unclearStuffCallback();
 			var request = referenceToRequest(stuff.substr(1));
-			loaderApi.resolve(loaderApi.context, request, function(err, result) {
+			resolve(request, 'unclearStuff', function(err, result) {
 				if (!err && result) {
 					knownHelpers[stuff.substr(1)] = true;
 					foundHelpers[stuff] = result;
@@ -103,17 +138,13 @@ module.exports = function(source) {
 			// Try every extension for partials
 			var i = 0;
 			(function tryExtension() {
-				var errorMsg = util.format("Partial '%s' not found", partial.substr(1));
-				if (i > extensions.length) return partialCallback(new Error(errorMsg));
+				if (i > extensions.length) {
+					var errorMsg = util.format("Partial '%s' not found", partial.substr(1));
+					return partialCallback(new Error(errorMsg));
+				}
 				var extension = extensions[i++];
 
-				if (debug) {
-					var path = require("path");
-					var partialTrace = path.normalize(loaderApi.context + "\\" + request + extension);
-					loaderApi.emitWarning("Attempting to resolve partial %s", partialTrace);
-				}
-
-				loaderApi.resolve(loaderApi.context, request + extension, function(err, result) {
+				resolve(request + extension, 'partial', function(err, result) {
 					if (!err && result) {
 						foundPartials[partial] = result;
 						needRecompile = true;
@@ -125,26 +156,21 @@ module.exports = function(source) {
 		};
 
 		var resolveHelpersIterator = function(helper, helperCallback) {
-			debugger;
-
 			if (foundHelpers[helper]) return helperCallback();
 			var request = referenceToRequest(helper.substr(1));
 
-			if (debug) {
-				var path = require("path");
-				var helperTrace = path.normalize(loaderApi.context + "\\" + request);
-				loaderApi.emitWarning("Attempting to resolve helper %s", helperTrace);
-			}
-
-			loaderApi.resolve(loaderApi.context, request, function(err, result) {
+			resolve(request, 'helper', function(err, result) {
 				if (!err && result) {
 					knownHelpers[helper.substr(1)] = true;
 					foundHelpers[helper] = result;
 					needRecompile = true;
 					return helperCallback();
 				}
-				var errorMsg = util.format("Helper '%s' not found", helper.substr(1));
-				helperCallback(new Error(errorMsg));
+
+				// We don't return an error: we just fail to resolve the helper.
+				// This is b/c Handlebars calls nameLookup with type=helper for non-helper
+				// template options, e.g. something that comes from the template data.
+				helperCallback();
 			});
 		};
 

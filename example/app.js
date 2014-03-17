@@ -1,6 +1,6 @@
 var bookListingTemplate = require("./book-listing.handlebars");
 
-document.write(bookListingTemplate({
+console.log(bookListingTemplate({
 	username: "test",
 	books: [
 		{ title: "A book", synopsis: "With a description" },
