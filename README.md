@@ -27,15 +27,15 @@ var template = require("./file.handlebars");
 
 ## Details
 
-The loader resolves partials and helpers automatically. They are looked up relative to the current directory or as a module if you prefix with `~`.
+The loader resolves partials and helpers automatically. They are looked up relative to the current directory or as a module if you prefix with `$`.
 
 ```handlebars
 A file "/folder/file.handlebars".
 {{> partial}} will reference "/folder/partial.handlebars".
 {{> ../partial}} will reference "/partial.handlebars".
-{{> ~module/partial}} will reference "/folder/node_modules/module/partial.handlebars".
+{{> $module/partial}} will reference "/folder/node_modules/module/partial.handlebars".
 {{helper}} will reference the helper "/folder/helper.js" if this file exists.
-{{../helper}} {{~module/helper}} are resolved similarly to partials.
+{{../helper}} {{$module/helper}} are resolved similarly to partials.
 ```
 
 See [`webpack`](https://github.com/webpack/webpack) documentation for more information regarding loaders.

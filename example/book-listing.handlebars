@@ -6,6 +6,10 @@
 <div>
   <p>Books array:</p>
   <pre>
-    {{json books}}
+    {{!-- the tilde "$" prefix indicates that the json helper should be loaded
+          as a module, which allows it to be resolved from the "helpers"
+          directory, which is specified as a resolve fallback in the
+          webpack config. --}}
+    {{$json books}}
   </pre>
 </div>

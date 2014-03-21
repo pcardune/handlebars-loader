@@ -85,11 +85,6 @@ module.exports = function(source) {
 		var resolve = function(request, type, callback) {
 			var contexts = [loaderApi.context];
 
-			// @TODO Get rid of this if @sokra updates webpack to do it as part of loaderApi.resolve()
-			if (loaderApi.options.resolve.fallback) {
-				contexts.push(loaderApi.options.resolve.fallback);
-			}
-
 			var resolveWithContexts = function() {
 				var context = contexts.shift();
 
@@ -97,6 +92,7 @@ module.exports = function(source) {
 				if (debug) {
 					traceMsg = path.normalize(context + "\\" + request);
 					console.log("Attempting to resolve %s %s", type, traceMsg);
+					console.log("request=%s", request);
 				}
 
 				loaderApi.resolve(context, request, function(err, result) {
@@ -228,7 +224,7 @@ module.exports = function(source) {
 };
 
 function referenceToRequest(ref) {
-	if (/^~/.test(ref))
+	if (/^\$/.test(ref))
 		return ref.substring(1);
 	else
 		return "./"+ref;
