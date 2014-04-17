@@ -38,6 +38,10 @@ A file "/folder/file.handlebars".
 {{../helper}} {{$module/helper}} are resolved similarly to partials.
 ```
 
+Two query options are supported:
+ - *helperDirs*: Defines additional directories to be searched for helpers. Allows helpers to be defined in a directory and used globally without relative paths.
+ - *extensions*: Searches for templates with alternate extensions. Defaults are .handlebars, .hbs, and '' (no extension).
+
 See [`webpack`](https://github.com/webpack/webpack) documentation for more information regarding loaders.
 
 ## Full example
