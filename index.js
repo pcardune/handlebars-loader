@@ -85,6 +85,14 @@ module.exports = function(source) {
 		var resolve = function(request, type, callback) {
 			var contexts = [loaderApi.context];
 
+			// Any additional helper dirs will be added to the searchable contexts
+			if (query.helperDirs) {
+				if (!Array.isArray(query.helperDirs)) {
+					query.helperDirs = [query.helperDirs];
+				}
+				contexts = contexts.concat(query.helperDirs);
+			}
+
 			var resolveWithContexts = function() {
 				var context = contexts.shift();
 
