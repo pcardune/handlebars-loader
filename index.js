@@ -10,7 +10,7 @@ module.exports = function(source) {
 	if (this.cacheable) this.cacheable();
 	var loaderApi = this;
 	var query = loaderUtils.parseQuery(this.query);
-	var runtimePath = require.resolve("handlebars/runtime");
+	var runtimePath = query.runtime || require.resolve("handlebars/runtime");
 
 	// Possible extensions for partials
 	var extensions = query.extensions;
