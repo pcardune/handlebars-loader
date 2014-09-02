@@ -1,4 +1,5 @@
 var assert = require('assert'),
+    async = require('async'),
     fs = require('fs'),
     path = require('path'),
     sinon = require('sinon'),
@@ -44,6 +45,12 @@ function testTemplate(loader, template, options, testFn) {
       });
     }
   }), loadTemplate(template));
+}
+
+function getStubbedHandlebarsTemplateFunction() {
+  return sinon.stub().returns(function () {
+    return 'STUBBED';
+  });
 }
 
 describe('handlebars-loader', function () {
@@ -131,7 +138,7 @@ describe('handlebars-loader', function () {
   });
 
   it('allows overriding the handlebars runtime path', function (done) {
-    var templateStub = sinon.stub().returns(function () { return 'MOCK'; });
+    var templateStub = getStubbedHandlebarsTemplateFunction();
     var handlebarsAPI = { template: templateStub };
 
     testTemplate(loader, './simple.handlebars', {
@@ -147,6 +154,34 @@ describe('handlebars-loader', function () {
         'should have required handlebars runtime from user-specified path');
       assert.ok(!require.calledWith('handlebars/runtime'),
         'should not have required default handlebars runtime');
+      done();
+    });
+  });
+
+  it('supports either the CommonJS or ES6 style of the handlebars runtime', function (done) {
+    var templateStub = getStubbedHandlebarsTemplateFunction();
+    // The loader will require the runtime by absolute path, need to know that
+    // in order to stub it properly
+    var runtimePath = require.resolve('handlebars/runtime');
+
+    function testWithHandlebarsAPI(api) {
+      return function (next) {
+        var stubs = {};
+        stubs[runtimePath] = api;
+        testTemplate(loader, './simple.handlebars', {
+          stubs: stubs
+        }, function (output, require) {
+          next(null, output);
+        });
+      };
+    }
+
+    async.series([
+      testWithHandlebarsAPI({ template: templateStub }), // CommonJS style
+      testWithHandlebarsAPI({ default: { template: templateStub } }) // ES6 style
+    ], function (err, results) {
+      assert.ok(!err, 'no errors');
+      assert.ok(results.filter(Boolean).length === 2, 'generated output');
       done();
     });
   });

@@ -216,7 +216,8 @@ module.exports = function(source) {
 			}
 
 			// export as module
-			loaderAsyncCallback(null, 'module.exports = require(' + JSON.stringify(runtimePath) + ').default.template(' + template + ');');
+			loaderAsyncCallback(null, 'var Handlebars = require(' + JSON.stringify(runtimePath) + ');\n'
+				+ 'module.exports = (Handlebars.default || Handlebars).template(' + template + ');');
 		};
 
 		var resolvePartials = function(err) {
