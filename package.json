@@ -7,6 +7,7 @@
   "description": "handlebars loader module for webpack",
   "dependencies": {
     "async": "~0.2.10",
+    "fastparse": "^1.0.0",
     "loader-utils": "0.2.x"
   },
   "peerDependencies": {

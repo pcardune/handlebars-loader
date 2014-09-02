@@ -3,6 +3,8 @@ var handlebars = require("handlebars");
 var async = require("async");
 var util = require("util");
 var path = require("path");
+var fastreplace = require('./lib/fastreplace');
+var findNestedRequires = require('./lib/findNestedRequires');
 
 module.exports = function(source) {
 	if (this.cacheable) this.cacheable();
@@ -23,6 +25,11 @@ module.exports = function(source) {
 	var foundHelpers = {};
 	var foundUnclearStuff = {};
 	var knownHelpers = {};
+
+	var inlineRequires = query.inlineRequires;
+	if (inlineRequires) {
+		inlineRequires = new RegExp(inlineRequires);
+	}
 
 	var debug = false;
 
@@ -60,6 +67,27 @@ module.exports = function(source) {
 			return JavaScriptCompiler.prototype.nameLookup.apply(this, arguments);
 		}
 	};
+
+	if (inlineRequires) {
+		MyJavaScriptCompiler.prototype.pushString = function(value) {
+			if (inlineRequires.test(value)) {
+				this.pushLiteral("require(" + JSON.stringify(value) + ")");
+			} else {
+				JavaScriptCompiler.prototype.pushString.call(this, value);
+			}
+		};
+		MyJavaScriptCompiler.prototype.appendToBuffer = function (str) {
+			// This is a template (stringified HTML) chunk
+			if (str.indexOf('"') === 0) {
+				var replacements = findNestedRequires(str, inlineRequires);
+				str = fastreplace(str, replacements, function (match) {
+					return "\" + require(" + JSON.stringify(match) + ") + \"";
+				});
+			}
+			return JavaScriptCompiler.prototype.appendToBuffer.call(this, str);
+		};
+	}
+
 	hb.JavaScriptCompiler = MyJavaScriptCompiler;
 
 	// This is an async loader
