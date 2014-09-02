@@ -130,4 +130,25 @@ describe('handlebars-loader', function () {
     });
   });
 
+  it('allows overriding the handlebars runtime path', function (done) {
+    var templateStub = sinon.stub().returns(function () { return 'MOCK'; });
+    var handlebarsAPI = { template: templateStub };
+
+    testTemplate(loader, './simple.handlebars', {
+      query: '?runtime=path/to/handlebars-runtime',
+      stubs: {
+        'path/to/handlebars-runtime': {
+          default: handlebarsAPI
+        }
+      }
+    }, function (output, require) {
+      assert.ok(output, 'generated output');
+      assert.ok(require.calledWith('path/to/handlebars-runtime'),
+        'should have required handlebars runtime from user-specified path');
+      assert.ok(!require.calledWith('handlebars/runtime'),
+        'should not have required default handlebars runtime');
+      done();
+    });
+  });
+
 });
