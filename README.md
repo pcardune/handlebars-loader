@@ -27,7 +27,7 @@ var template = require("./file.handlebars");
 
 ## Details
 
-The loader resolves partials and helpers automatically. They are looked up relative to the current directory or as a module if you prefix with `$`.
+The loader resolves partials and helpers automatically. They are looked up relative to the current directory (this can be modified with the `rootRelative` option) or as a module if you prefix with `$`.
 
 ```handlebars
 A file "/folder/file.handlebars".
@@ -43,6 +43,7 @@ The following query options are supported:
  - *runtime*: Specify the path to the handlebars runtime library. Defaults to look under the local handlebars npm module, i.e. `handlebars/runtime`.
  - *extensions*: Searches for templates with alternate extensions. Defaults are .handlebars, .hbs, and '' (no extension).
  - *inlineRequires*: Defines a regex that identifies strings within helper/partial parameters that should be replaced by inline require statements.
+ - *rootRelative*: When automatically resolving partials and helpers, use an implied root path if none is present. Default = `./`. Setting this to be empty effectively turns off automatically resolving relative handlebars resources for items like `{{helper}}`. `{{./helper}}` will still resolve as expected.
 
 See [`webpack`](https://github.com/webpack/webpack) documentation for more information regarding loaders.
 

@@ -21,6 +21,11 @@ module.exports = function(source) {
 		extensions = extensions.split(/[ ,;]/g);
 	}
 
+	var rootRelative = query.rootRelative;
+	if (rootRelative == null) {
+		rootRelative = "./";
+	}
+
 	var foundPartials = {};
 	var foundHelpers = {};
 	var foundUnclearStuff = {};
@@ -101,6 +106,13 @@ module.exports = function(source) {
 			console.log("\nCompilation pass %d", ++compilationPass);
 		}
 
+		function referenceToRequest(ref) {
+			if (/^\$/.test(ref))
+				return ref.substring(1);
+			else
+				return rootRelative + ref;
+		}
+
 		// Need another compiler pass?
 		var needRecompile = false;
 
@@ -115,9 +127,6 @@ module.exports = function(source) {
 
 			// Any additional helper dirs will be added to the searchable contexts
 			if (query.helperDirs) {
-				if (!Array.isArray(query.helperDirs)) {
-					query.helperDirs = [query.helperDirs];
-				}
 				contexts = contexts.concat(query.helperDirs);
 			}
 
@@ -259,10 +268,3 @@ module.exports = function(source) {
 		resolveHelpers();
 	}());
 };
-
-function referenceToRequest(ref) {
-	if (/^\$/.test(ref))
-		return ref.substring(1);
-	else
-		return "./"+ref;
-}

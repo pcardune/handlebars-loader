@@ -5,7 +5,13 @@ var assert = require('assert'),
     sinon = require('sinon'),
 
     loader = require('../'),
-    WebpackLoaderMock = require('./lib/WebpackLoaderMock');
+    WebpackLoaderMock = require('./lib/WebpackLoaderMock'),
+
+    TEST_TEMPLATE_DATA = {
+      title: 'Title',
+      description: 'Description',
+      image: 'http://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50'
+    };
 
 function applyTemplate(source, options) {
   var requires = options && options.requireStubs || {},
@@ -57,10 +63,7 @@ describe('handlebars-loader', function () {
 
   it('should load simple handlebars templates', function (done) {
     testTemplate(loader, './simple.handlebars', {
-      data: {
-        title: 'This is the title',
-        description: 'This is the description'
-      }
+      data: TEST_TEMPLATE_DATA
     }, function (output, require) {
       assert.ok(output, 'generated output');
       // There will actually be 1 require for the main handlebars runtime library
@@ -76,10 +79,7 @@ describe('handlebars-loader', function () {
         'title': function (text) { return 'Title: ' + text; },
         './description': function (text) { return 'Description: ' + text; }
       },
-      data: {
-        title: 'This is the title',
-        description: 'This is the description'
-      }
+      data: TEST_TEMPLATE_DATA
     }, function (output, require) {
       assert.ok(output, 'generated output');
       assert.ok(require.calledWith('title'),
@@ -96,10 +96,7 @@ describe('handlebars-loader', function () {
         './partial': require('./partial.handlebars'),
         'partial': require('./partial.handlebars')
       },
-      data: {
-        title: 'This is the title',
-        description: 'This is the description'
-      }
+      data: TEST_TEMPLATE_DATA
     }, function (output, require) {
       assert.ok(output, 'generated output');
       assert.ok(require.calledWith('partial'),
@@ -113,11 +110,34 @@ describe('handlebars-loader', function () {
   it('allows specifying additional helper search directories', function (done) {
     testTemplate(loader, './with-dir-helpers.handlebars', {
       query: '?helperDirs[]=' + path.join(__dirname, 'helpers'),
-      data: {
-        image: 'http://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50'
-      }
+      data: TEST_TEMPLATE_DATA
     }, function (output, require) {
       assert.ok(output, 'generated output');
+      done();
+    });
+  });
+
+  it('allows changing where implicit helpers and partials resolve from', function (done) {
+    function testWithRootRelative(rootRelative, next) {
+      var stubs = {},
+          relativeHelper = rootRelative + 'description';
+
+      stubs['title'] = function (text) { return 'Title: ' + text; };
+      stubs[relativeHelper] = function (text) { return 'Description: ' + text; };
+
+      testTemplate(loader, './with-helpers.handlebars', {
+        query: '?rootRelative=' + rootRelative,
+        stubs: stubs,
+        data: TEST_TEMPLATE_DATA
+      }, function (output, require) {
+        assert.ok(output, 'generated output');
+        assert.ok(require.calledWith(relativeHelper), 'required helper at ' + relativeHelper);
+        next();
+      });
+    }
+
+    async.each(['./', '../', '', 'path/to/stuff'], testWithRootRelative, function (err, results) {
+      assert.ok(!err, 'no errors');
       done();
     });
   });
