@@ -6,11 +6,19 @@ var path = require("path");
 var fastreplace = require('./lib/fastreplace');
 var findNestedRequires = require('./lib/findNestedRequires');
 
+function versionCheck(hbCompiler, hbRuntime) {
+	return hbCompiler.COMPILER_REVISION === (hbRuntime["default"] || hbRuntime).COMPILER_REVISION;
+}
+
 module.exports = function(source) {
 	if (this.cacheable) this.cacheable();
 	var loaderApi = this;
 	var query = loaderUtils.parseQuery(this.query);
 	var runtimePath = query.runtime || require.resolve("handlebars/runtime");
+
+	if (!versionCheck(handlebars, require(runtimePath))) {
+		throw new Error('Handlebars compiler version does not match runtime version');
+	}
 
 	// Possible extensions for partials
 	var extensions = query.extensions;
