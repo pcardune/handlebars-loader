@@ -117,10 +117,16 @@ module.exports = function(source) {
 		var needRecompile = false;
 
 		// Precompile template
-		var template = hb.precompile(source, {
-			knownHelpersOnly: firstCompile ? false : true,
-			knownHelpers: knownHelpers
-		});
+		var template;
+
+		try {
+			template = hb.precompile(source, {
+				knownHelpersOnly: firstCompile ? false : true,
+				knownHelpers: knownHelpers
+			});
+		} catch (err) {
+			return loaderAsyncCallback(err);
+		}
 
 		var resolve = function(request, type, callback) {
 			var contexts = [loaderApi.context];
@@ -230,7 +236,7 @@ module.exports = function(source) {
 		};
 
 		var resolvePartials = function(err) {
-			if (err) throw err;
+			if (err) return doneResolving(err);
 
 			if (debug) {
 				console.log("Attempting to resolve partials:");
@@ -242,7 +248,7 @@ module.exports = function(source) {
 		};
 
 		var resolveUnclearStuff = function(err) {
-			if (err) throw err;
+			if (err) return resolvePartials(err);
 
 			if (debug) {
 				console.log("Attempting to resolve unclearStuff:");
@@ -254,7 +260,7 @@ module.exports = function(source) {
 		};
 
 		var resolveHelpers = function(err) {
-			if (err) throw err;
+			if (err) throw resolveUnclearStuff(err);
 
 			if (debug) {
 				console.log("Attempting to resolve helpers:");

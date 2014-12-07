@@ -22,7 +22,7 @@ function applyTemplate(source, options) {
 
   (new Function('module', 'require', source))(_module, _require);
 
-  options.test(_module.exports(options.data), _require);
+  options.test(null, _module.exports(options.data), _require);
 }
 
 function loadTemplate(templatePath) {
@@ -40,8 +40,11 @@ function testTemplate(loader, template, options, testFn) {
     query: options.query,
     resolveStubs: resolveStubs,
     async: function (err, source) {
-      if (err || !source) {
-        throw new Error('Could not generate template');
+      if (err) {
+        // Proxy errors from loader to test function
+        return testFn(err);
+      } else if (!source) {
+        return testFn(new Error('Could not generate template'));
       }
 
       applyTemplate(source, {
@@ -64,7 +67,7 @@ describe('handlebars-loader', function () {
   it('should load simple handlebars templates', function (done) {
     testTemplate(loader, './simple.handlebars', {
       data: TEST_TEMPLATE_DATA
-    }, function (output, require) {
+    }, function (err, output, require) {
       assert.ok(output, 'generated output');
       // There will actually be 1 require for the main handlebars runtime library
       assert.equal(require.callCount, 1,
@@ -80,7 +83,7 @@ describe('handlebars-loader', function () {
         './description': function (text) { return 'Description: ' + text; }
       },
       data: TEST_TEMPLATE_DATA
-    }, function (output, require) {
+    }, function (err, output, require) {
       assert.ok(output, 'generated output');
       assert.ok(require.calledWith('title'),
         'should have loaded helper with module syntax');
@@ -97,7 +100,7 @@ describe('handlebars-loader', function () {
         'partial': require('./partial.handlebars')
       },
       data: TEST_TEMPLATE_DATA
-    }, function (output, require) {
+    }, function (err, output, require) {
       assert.ok(output, 'generated output');
       assert.ok(require.calledWith('partial'),
         'should have loaded partial with module syntax');
@@ -111,7 +114,7 @@ describe('handlebars-loader', function () {
     testTemplate(loader, './with-dir-helpers.handlebars', {
       query: '?helperDirs[]=' + path.join(__dirname, 'helpers'),
       data: TEST_TEMPLATE_DATA
-    }, function (output, require) {
+    }, function (err, output, require) {
       assert.ok(output, 'generated output');
       done();
     });
@@ -129,7 +132,7 @@ describe('handlebars-loader', function () {
         query: '?rootRelative=' + rootRelative,
         stubs: stubs,
         data: TEST_TEMPLATE_DATA
-      }, function (output, require) {
+      }, function (err, output, require) {
         assert.ok(output, 'generated output');
         assert.ok(require.calledWith(relativeHelper), 'required helper at ' + relativeHelper);
         next();
@@ -149,7 +152,7 @@ describe('handlebars-loader', function () {
         './image': function (text) { return 'Image URL: ' + text; },
         'images/path/to/image': 'http://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50'
       }
-    }, function (output, require) {
+    }, function (err, output, require) {
       assert.ok(output, 'generated output');
       assert.ok(require.calledWith('images/path/to/image'),
         'should have required image path');
@@ -168,7 +171,7 @@ describe('handlebars-loader', function () {
           default: handlebarsAPI
         }
       }
-    }, function (output, require) {
+    }, function (err, output, require) {
       assert.ok(output, 'generated output');
       assert.ok(require.calledWith('path/to/handlebars-runtime'),
         'should have required handlebars runtime from user-specified path');
@@ -190,9 +193,7 @@ describe('handlebars-loader', function () {
         stubs[runtimePath] = api;
         testTemplate(loader, './simple.handlebars', {
           stubs: stubs
-        }, function (output, require) {
-          next(null, output);
-        });
+        }, next);
       };
     }
 
@@ -202,6 +203,35 @@ describe('handlebars-loader', function () {
     ], function (err, results) {
       assert.ok(!err, 'no errors');
       assert.ok(results.filter(Boolean).length === 2, 'generated output');
+      done();
+    });
+  });
+
+  it('properly catches errors in template syntax', function (done) {
+    testTemplate(loader, './invalid-syntax-error.handlebars', {}, function (err, output, require) {
+      assert.ok(err, 'got error');
+      assert.ok(err.message.indexOf('Parse error') >= 0, 'error was handlebars parse error');
+      done();
+    });
+  });
+
+  it('properly catches errors when unknown helper found', function (done) {
+    testTemplate(loader, './invalid-unknown-helpers.handlebars', {
+      stubs: {
+        // A two-pass compile is required to see this error, and two-pass compilation
+        // only happens when the loader finds SOME helper/partial during the first pass.
+        // So we stub one that it can find.
+        //
+        // This means that if your template ONLY contains an unknown helper, the loader will not
+        // detect an error, and you will only see problems when you attempt to render the template.
+        //
+        // TODO: figure out better way to detect helpers so the resolveHelpersIterator can reliably
+        // catch errors, instead of assuming that the helper is actually a template var
+        './unknownExistingHelper': function (text) { return text; }
+      }
+    }, function (err, output, require) {
+      assert.ok(err, 'got error');
+      assert.ok(err.message.indexOf('You specified knownHelpersOnly') >= 0, 'error was handlebars unknown helper error');
       done();
     });
   });
