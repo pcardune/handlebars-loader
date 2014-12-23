@@ -116,12 +116,14 @@ module.exports = function(source) {
 		// Need another compiler pass?
 		var needRecompile = false;
 
+    var knownHelpersOnly = query.knownHelpersOnly;
+
 		// Precompile template
 		var template;
 
 		try {
 			template = hb.precompile(source, {
-				knownHelpersOnly: firstCompile ? false : true,
+        knownHelpersOnly: knownHelpersOnlyOption ? knownHelpersOnly : firstCompile ? false : true,
 				knownHelpers: knownHelpers
 			});
 		} catch (err) {
