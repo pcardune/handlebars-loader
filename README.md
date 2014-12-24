@@ -47,6 +47,7 @@ The following query options are supported:
  - *rootRelative*: When automatically resolving partials and helpers, use an implied root path if none is present. Default = `./`. Setting this to be empty effectively turns off automatically resolving relative handlebars resources for items like `{{helper}}`. `{{./helper}}` will still resolve as expected.
  - *knownHelpersOnly*: When set to false, it overrides the default lookup scan so that you can define helpers easily post compile-time (aka, unknown helpers).  Use this option with caution as it skips various compile-time checks.
  - *debug*: Shows trace information to help debug issues (e.g. resolution of helpers).
+ - *knownHelpersOnly*: When set to false, it overrides the default lookup scan so that you can define helpers easily post compile-time (aka, unknown helpers).  Use this option with caution as it skips various compile-time checks.
 
 See [`webpack`](https://github.com/webpack/webpack) documentation for more information regarding loaders.
 
