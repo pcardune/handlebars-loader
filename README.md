@@ -44,6 +44,8 @@ The following query options are supported:
  - *extensions*: Searches for templates with alternate extensions. Defaults are .handlebars, .hbs, and '' (no extension).
  - *inlineRequires*: Defines a regex that identifies strings within helper/partial parameters that should be replaced by inline require statements.
  - *rootRelative*: When automatically resolving partials and helpers, use an implied root path if none is present. Default = `./`. Setting this to be empty effectively turns off automatically resolving relative handlebars resources for items like `{{helper}}`. `{{./helper}}` will still resolve as expected.
+ - *knownHelpersOnly*: When set to false, it overrides the default lookup scan so that you can define helpers easily post compile-time (aka, unknown helpers).  Use this option with caution as it skips various compile-time checks.
+
 
 See [`webpack`](https://github.com/webpack/webpack) documentation for more information regarding loaders.
 
