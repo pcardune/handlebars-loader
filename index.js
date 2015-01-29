@@ -124,12 +124,16 @@ module.exports = function(source) {
 		// Need another compiler pass?
 		var needRecompile = false;
 
+    // Add ability to anonymously pass in helpers that were registered
+    // after precompilation.
+    var knownHelpersOnly = query.knownHelpersOnly;
+
 		// Precompile template
 		var template;
 
 		try {
 			template = hb.precompile(source, {
-				knownHelpersOnly: firstCompile ? false : true,
+        knownHelpersOnly: knownHelpersOnly === false ? false : firstCompile ? false : true,
 				knownHelpers: knownHelpers
 			});
 		} catch (err) {
