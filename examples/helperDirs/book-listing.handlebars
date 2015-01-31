@@ -1,0 +1,29 @@
+<h1>{{username}}</h1>
+<div>
+  {{#books}}{{> book}}{{/books}}
+</div>
+
+<div>
+  <p>Books array:</p>
+  <pre>
+    {{json books}}
+  </pre>
+</div>
+
+<p>
+    {{!-- the brackets are required around this helper because 
+          handlebars will parse 'a/b/c whatever' as having a
+          helper 'a' rather than a helper 'a/b/c'  --}}
+	{{[transformers/embiggen] 'This should have asterisks'}}
+
+</p>
+
+<p>
+    {{!-- not required here since helper is in root dir  --}}
+	{{json 'This should be JSONififed'}}
+</p>
+
+<p>
+  {{!-- can still reference the helper relative to the helper directory, not the partial directory --}}
+  {{>./a/deeply/nested-partial 'this text should have a period at the end'}}
+</p>
