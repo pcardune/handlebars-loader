@@ -120,6 +120,16 @@ describe('handlebars-loader', function () {
     });
   });
 
+  it('should find helpers in subdirectories', function (done) {
+    testTemplate(loader, './with-nested-helper.handlebars', {
+      query: '?helperDirs[]=' + path.join(__dirname, 'helpers'),
+      data: TEST_TEMPLATE_DATA
+    }, function (err, output, require) {
+      assert.ok(output, 'generated output');
+      done();
+    });
+  });
+
   it('allows changing where implicit helpers and partials resolve from', function (done) {
     function testWithRootRelative(rootRelative, next) {
       var stubs = {},

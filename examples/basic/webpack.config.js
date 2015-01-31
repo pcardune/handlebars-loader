@@ -10,6 +10,6 @@ module.exports = {
     fallback: path.join(__dirname, "helpers")
   },
 	module: {
-		loaders: [{ test: /\.handlebars$/, loader: __dirname + "/../" }]
+		loaders: [{ test: /\.handlebars$/, loader: __dirname + "/../../" }]
 	}
 };
