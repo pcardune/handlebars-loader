@@ -165,15 +165,15 @@ describe('handlebars-loader', function () {
     var handlebarsAPI = { template: templateStub };
 
     testTemplate(loader, './simple.handlebars', {
-      query: '?runtime=path/to/handlebars-runtime',
+      query: '?runtime=handlebars/runtime.js', // runtime actually gets required() as part of version check, so we specify real path to runtime but specify the extension so we know loader is using our custom version.
       stubs: {
-        'path/to/handlebars-runtime': {
+        'handlebars/runtime.js': {
           default: handlebarsAPI
         }
       }
     }, function (err, output, require) {
       assert.ok(output, 'generated output');
-      assert.ok(require.calledWith('path/to/handlebars-runtime'),
+      assert.ok(require.calledWith('handlebars/runtime.js'),
         'should have required handlebars runtime from user-specified path');
       assert.ok(!require.calledWith('handlebars/runtime'),
         'should not have required default handlebars runtime');
