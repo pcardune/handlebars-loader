@@ -2,7 +2,8 @@
   "name": "handlebars-loader",
   "contributors": [
     "Alan @altano",
-    "Tobias Koppers @sokra"
+    "Tobias Koppers @sokra",
+    "Jason Anderson @diurnalist"
   ],
   "description": "handlebars loader module for webpack",
   "dependencies": {
@@ -23,7 +24,7 @@
     "type": "git",
     "url": "git://github.com/altano/handlebars-loader.git"
   },
-  "version": "0.1.7",
+  "version": "0.1.8",
   "devDependencies": {
     "mocha": "^1.21.4",
     "sinon": "^1.10.3"

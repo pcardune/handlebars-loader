@@ -2,3 +2,6 @@
 *.sublime-workspace
 node_modules
 example/dist/
+.ntvs_analysis.dat
+obj/
+.ntvs_analysis.dat.tmp
