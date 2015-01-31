@@ -191,6 +191,20 @@ describe('handlebars-loader', function () {
     });
   });
 
+  it('allows defining unknown helpers at runtime', function (done) {
+
+    // Include handlebars helper that is not known during precompile
+    require('./helpers/unknownHelper');
+
+    testTemplate(loader, './with-unknown-helpers.handlebars', {
+      query: '?knownHelpersOnly=false',
+      data: TEST_TEMPLATE_DATA
+    }, function (err, output, require) {
+      assert.ok(output, 'I am an unknown helper: Title');
+      done();
+    });
+  });
+
   it('supports either the CommonJS or ES6 style of the handlebars runtime', function (done) {
     var templateStub = getStubbedHandlebarsTemplateFunction();
     // The loader will require the runtime by absolute path, need to know that

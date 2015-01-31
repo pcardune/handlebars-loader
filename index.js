@@ -126,14 +126,20 @@ module.exports = function(source) {
 
     // Add ability to anonymously pass in helpers that were registered
     // after precompilation.
-    var knownHelpersOnly = query.knownHelpersOnly;
+    var knownHelpersOnly;
+
+    if (query.knownHelpersOnly === false || firstCompile) {
+      knownHelpersOnly = false;
+    } else {
+      knownHelpersOnly = true;
+    }
 
 		// Precompile template
 		var template;
 
 		try {
 			template = hb.precompile(source, {
-        knownHelpersOnly: knownHelpersOnly === false ? false : firstCompile ? false : true,
+        knownHelpersOnly: knownHelpersOnly,
 				knownHelpers: knownHelpers
 			});
 		} catch (err) {
