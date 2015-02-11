@@ -121,18 +121,21 @@ module.exports = function(source) {
 				return rootRelative + ref;
 		}
 
-		// Need another compiler pass?
-		var needRecompile = false;
-
     // Add ability to anonymously pass in helpers that were registered
     // after precompilation.
-    var knownHelpersOnly;
+    var knownHelpersOnly = query.knownHelpersOnly;
 
-    if (query.knownHelpersOnly === false || firstCompile) {
-      knownHelpersOnly = false;
+    // Ensure that a query param has been passed, otherwise fallback
+    // on previous `firstCompile` check.
+    if (typeof knownHelpersOnly !== 'undefined') {
+      knownHelpersOnly = knownHelpersOnly === 'false' ? false : true;
     } else {
-      knownHelpersOnly = true;
+      knownHelpersOnly = firstCompile ? false : true;
+
     }
+
+		// Need another compiler pass?
+		var needRecompile = false;
 
 		// Precompile template
 		var template;

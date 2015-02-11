@@ -201,8 +201,22 @@ describe('handlebars-loader', function () {
       data: TEST_TEMPLATE_DATA
     }, function (err, output, require) {
       assert.ok(output, 'I am an unknown helper: Title');
+    });
+
+    testTemplate(loader, './with-unknown-helpers.handlebars', {
+      query: '?knownHelpersOnly=true',
+      data: TEST_TEMPLATE_DATA
+    }, function (err, output, require) {
+      assert.ok(err.message, err.message.match(/You specified knownHelpersOnly\, but used the unknown helper/).pop());
+    });
+
+    testTemplate(loader, './with-unknown-helpers.handlebars', {
+      data: TEST_TEMPLATE_DATA
+    }, function (err, output, require) {
+      // assert.ok(err.message, err.message.match(/You specified knownHelpersOnly\, but used the unknown helper/).pop());
       done();
     });
+
   });
 
   it('supports either the CommonJS or ES6 style of the handlebars runtime', function (done) {
