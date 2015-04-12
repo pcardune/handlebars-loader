@@ -2,6 +2,8 @@
 
 A [`handlebars`](http://handlebarsjs.com) template loader for [`webpack`](https://github.com/webpack/webpack).
 
+*Handlebars 3 now supported*
+
 ## General Usage
 
 ### webpack configuration

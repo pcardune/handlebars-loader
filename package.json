@@ -12,7 +12,7 @@
     "loader-utils": "0.2.x"
   },
   "peerDependencies": {
-    "handlebars": ">= 1.3.0 < 3"
+    "handlebars": ">= 1.3.0 < 4"
   },
   "licenses": [
     {
@@ -24,7 +24,7 @@
     "type": "git",
     "url": "git://github.com/altano/handlebars-loader.git"
   },
-  "version": "0.1.8",
+  "version": "1.0.0",
   "devDependencies": {
     "mocha": "^1.21.4",
     "sinon": "^1.10.3"

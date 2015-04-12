@@ -97,7 +97,7 @@ module.exports = function(source) {
 					return "\" + require(" + JSON.stringify(match) + ") + \"";
 				});
 			}
-			return JavaScriptCompiler.prototype.appendToBuffer.call(this, str);
+			return JavaScriptCompiler.prototype.appendToBuffer.apply(this, arguments);
 		};
 	}
 
