@@ -24,7 +24,7 @@
     "type": "git",
     "url": "git://github.com/altano/handlebars-loader.git"
   },
-  "version": "0.1.8",
+  "version": "1.0.0",
   "devDependencies": {
     "mocha": "^1.21.4",
     "sinon": "^1.10.3"
