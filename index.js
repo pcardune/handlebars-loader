@@ -114,9 +114,11 @@ module.exports = function(source) {
 			console.log("\nCompilation pass %d", ++compilationPass);
 		}
 
-		function referenceToRequest(ref) {
+		function referenceToRequest(ref, type) {
 			if (/^\$/.test(ref))
 				return ref.substring(1);
+			else if (type === 'helper' && query.helperDirs && query.helperDirs.length)
+				return ref;
 			else
 				return rootRelative + ref;
 		}
@@ -174,7 +176,7 @@ module.exports = function(source) {
 
 		var resolveUnclearStuffIterator = function(stuff, unclearStuffCallback) {
 			if (foundUnclearStuff[stuff]) return unclearStuffCallback();
-			var request = referenceToRequest(stuff.substr(1));
+			var request = referenceToRequest(stuff.substr(1), 'unclearStuff');
 			resolve(request, 'unclearStuff', function(err, result) {
 				if (!err && result) {
 					knownHelpers[stuff.substr(1)] = true;
@@ -188,7 +190,7 @@ module.exports = function(source) {
 
 		var resolvePartialsIterator = function(partial, partialCallback) {
 			if (foundPartials[partial]) return partialCallback();
-			var request = referenceToRequest(partial.substr(1));
+			var request = referenceToRequest(partial.substr(1), 'partial');
 
 			// Try every extension for partials
 			var i = 0;
@@ -212,7 +214,7 @@ module.exports = function(source) {
 
 		var resolveHelpersIterator = function(helper, helperCallback) {
 			if (foundHelpers[helper]) return helperCallback();
-			var request = referenceToRequest(helper.substr(1));
+			var request = referenceToRequest(helper.substr(1), 'helper');
 
 			resolve(request, 'helper', function(err, result) {
 				if (!err && result) {

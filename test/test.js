@@ -246,4 +246,33 @@ describe('handlebars-loader', function () {
     });
   });
 
+  it('should find helpers and partials if both relativeRoot and helperDirs is set', function (done) {
+    var rootRelative = path.resolve(__dirname, 'relativeRoot') + '/';
+    var helperDirs = path.join(__dirname, 'helpers');
+    var stubs = {
+      'relative-partial': require('./relativeRoot/relative-partial.handlebars'),
+      'image': require('./helpers/image.js'),
+      'nested/quotify': require('./helpers/nested/quotify.js')
+    };
+    stubs[rootRelative + 'relative-partial'] = require('./relativeRoot/relative-partial.handlebars');
+
+    testTemplate(loader, './with-relative-root.handlebars', {
+      stubs: stubs,
+      query: '?helperDirs[]=' + helperDirs + '&rootRelative=' + rootRelative,
+      data: TEST_TEMPLATE_DATA
+    }, function (err, output, require) {
+      assert.ok(output, 'generated output');
+      assert.ok(require.calledWith('image'),
+        'should have loaded helper');
+
+      assert.ok(require.calledWith('nested/quotify'),
+        'should have loaded nested helper');
+
+      assert.ok(require.calledWith('relative-partial'),
+        'should have loaded partial with module syntax');
+      assert.ok(require.calledWith(rootRelative + 'relative-partial'),
+        'should have loaded partial with relative syntax');
+      done();
+    });
+  });
 });
