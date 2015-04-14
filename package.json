@@ -34,6 +34,10 @@
   },
   "homepage": "https://github.com/altano/handlebars-loader",
   "main": "index.js",
+  "files": [
+    "index.js",
+    "lib"
+  ],
   "directories": {
     "example": "example",
     "test": "test"
