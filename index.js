@@ -13,7 +13,7 @@ function versionCheck(hbCompiler, hbRuntime) {
 module.exports = function(source) {
 	if (this.cacheable) this.cacheable();
 	var loaderApi = this;
-	var query = loaderUtils.parseQuery(this.query);
+	var query = this.query instanceof Object ? this.query : loaderUtils.parseQuery(this.query);
 	var runtimePath = query.runtime || require.resolve("handlebars/runtime");
 
 	if (!versionCheck(handlebars, require(runtimePath))) {

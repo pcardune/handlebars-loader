@@ -10,7 +10,8 @@ var assert = require('assert'),
     TEST_TEMPLATE_DATA = {
       title: 'Title',
       description: 'Description',
-      image: 'http://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50'
+      image: 'http://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50',
+      object: {a: 'a', b: 'b', c: 'c'}
     };
 
 function applyTemplate(source, options) {
@@ -110,9 +111,49 @@ describe('handlebars-loader', function () {
     });
   });
 
-  it('allows specifying additional helper search directories', function (done) {
+  it('allows specifying additional helper search directory', function (done) {
     testTemplate(loader, './with-dir-helpers.handlebars', {
       query: '?helperDirs[]=' + path.join(__dirname, 'helpers'),
+      data: TEST_TEMPLATE_DATA
+    }, function (err, output, require) {
+      assert.ok(output, 'generated output');
+      done();
+    });
+  });
+
+  it('allows specifying multiple additional helper search directories', function (done) {
+    testTemplate(loader, './with-dir-helpers-multiple.handlebars', {
+      query: '?helperDirs[]=' + path.join(__dirname, 'helpers') + '&helperDirs[]=' + path.join(__dirname, 'helpers2'),
+      data: TEST_TEMPLATE_DATA
+    }, function (err, output, require) {
+      assert.ok(output, 'generated output');
+      done();
+    });
+  });
+
+  it('allows specifying multiple additional helper search directories with object literal', function (done) {
+    testTemplate(loader, './with-dir-helpers-multiple.handlebars', {
+      query: {
+        helperDirs: [
+          path.join(__dirname, 'helpers'),
+          path.join(__dirname, 'helpers2')
+        ]
+      },
+      data: TEST_TEMPLATE_DATA
+    }, function (err, output, require) {
+      assert.ok(output, 'generated output');
+      done();
+    });
+  });
+
+  it('allows specifying multiple additional helper search directories with JSON', function (done) {
+    testTemplate(loader, './with-dir-helpers-multiple.handlebars', {
+      query: '?' + JSON.stringify({
+        helperDirs: [
+          path.join(__dirname, 'helpers'),
+          path.join(__dirname, 'helpers2')
+        ]
+      }),
       data: TEST_TEMPLATE_DATA
     }, function (err, output, require) {
       assert.ok(output, 'generated output');
