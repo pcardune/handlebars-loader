@@ -1,0 +1,16 @@
+<h1>{{username}}</h1>
+<div>
+  {{#books}}{{> book}}{{/books}}
+</div>
+
+<div>
+  <p>Books array:</p>
+  <pre>
+    {{json books}}
+  </pre>
+</div>
+
+<p>
+    {{!-- not required here since helper is in root dir  --}}
+	{{json 'This should be JSONififed'}}
+</p>
