@@ -44,7 +44,7 @@ module.exports = function(source) {
 		inlineRequires = new RegExp(inlineRequires);
 	}
 
-	var debug = false;
+	var debug = query.debug;
 
 	var hb = handlebars.create();
 	var JavaScriptCompiler = hb.JavaScriptCompiler;
