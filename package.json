@@ -26,6 +26,7 @@
   },
   "version": "1.0.2",
   "devDependencies": {
+    "html-loader": "^0.3.0",
     "mocha": "^1.21.4",
     "sinon": "^1.10.3"
   },
