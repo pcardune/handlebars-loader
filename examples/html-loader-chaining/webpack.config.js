@@ -13,6 +13,6 @@ module.exports = {
     /* In your code, it would be this instead:
     loaders: [{ test: /\.hbs.html$/, loader: "handlebars!html" }]
     */
-		loaders: [{ test: /\.hbs.html$/, loader: __dirname + "/../../!html" }]
+		loaders: [{ test: /\.hbs\.html$/, loader: __dirname + "/../../!html" }]
 	}
 };
