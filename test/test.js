@@ -48,11 +48,15 @@ function testTemplate(loader, template, options, testFn) {
         return testFn(new Error('Could not generate template'));
       }
 
-      applyTemplate(source, {
-        data: options.data,
-        requireStubs: options.stubs,
-        test: testFn
-      });
+      if (options.skipApplyTemplate) {
+        testFn(null, source);
+      } else {
+        applyTemplate(source, {
+          data: options.data,
+          requireStubs: options.stubs,
+          test: testFn
+        });
+      }
     }
   }), loadTemplate(template));
 }
@@ -283,6 +287,22 @@ describe('handlebars-loader', function () {
     }, function (err, output, require) {
       assert.ok(err, 'got error');
       assert.ok(err.message.indexOf('You specified knownHelpersOnly') >= 0, 'error was handlebars unknown helper error');
+      done();
+    });
+  });
+
+  it('allows specifying known helpers', function (done) {
+    testTemplate(loader, './invalid-unknown-helpers.handlebars', {
+      skipApplyTemplate: true,
+      query: '?knownHelpers[]=unknownMissingHelper',
+      stubs: {
+        './unknownExistingHelper': function (text) { return 'text'; }
+      }
+    }, function (err, output, require) {
+      assert.ok(output.indexOf('helpers.unknownMissingHelp') > 0,
+        'expects unknownMissingHelp to be a helper');
+      assert.ok(output.indexOf('require("./unknownExistingHelper")') > 0,
+        'expect unknownExistingHelper to be required');
       done();
     });
   });

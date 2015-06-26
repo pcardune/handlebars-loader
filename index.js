@@ -39,6 +39,16 @@ module.exports = function(source) {
 	var foundUnclearStuff = {};
 	var knownHelpers = {};
 
+	var queryKnownHelpers = query.knownHelpers;
+	if (queryKnownHelpers) {
+		if (!Array.isArray(queryKnownHelpers)) {
+			queryKnownHelpers = [queryKnownHelpers];
+		}
+		queryKnownHelpers.forEach(function(k) {
+			knownHelpers[k] = true;
+		});
+	}
+
 	var inlineRequires = query.inlineRequires;
 	if (inlineRequires) {
 		inlineRequires = new RegExp(inlineRequires);
