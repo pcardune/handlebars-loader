@@ -41,10 +41,7 @@ module.exports = function(source) {
 
 	var queryKnownHelpers = query.knownHelpers;
 	if (queryKnownHelpers) {
-		if (!Array.isArray(queryKnownHelpers)) {
-			queryKnownHelpers = [queryKnownHelpers];
-		}
-		queryKnownHelpers.forEach(function(k) {
+		[].concat(queryKnownHelpers).forEach(function(k) {
 			knownHelpers[k] = true;
 		});
 	}

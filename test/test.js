@@ -48,15 +48,11 @@ function testTemplate(loader, template, options, testFn) {
         return testFn(new Error('Could not generate template'));
       }
 
-      if (options.skipApplyTemplate) {
-        testFn(null, source);
-      } else {
-        applyTemplate(source, {
-          data: options.data,
-          requireStubs: options.stubs,
-          test: testFn
-        });
-      }
+      applyTemplate(source, {
+        data: options.data,
+        requireStubs: options.stubs,
+        test: testFn
+      });
     }
   }), loadTemplate(template));
 }
@@ -292,17 +288,23 @@ describe('handlebars-loader', function () {
   });
 
   it('allows specifying known helpers', function (done) {
-    testTemplate(loader, './invalid-unknown-helpers.handlebars', {
-      skipApplyTemplate: true,
-      query: '?knownHelpers[]=unknownMissingHelper',
-      stubs: {
-        './unknownExistingHelper': function (text) { return 'text'; }
-      }
+    var runtimePath = require.resolve('handlebars/runtime');
+    var stubs = {};
+
+    // Need to set up a stubbed handlebars runtime that has our known helper loaded in
+    var Handlebars = require('handlebars/runtime').default.create();
+    stubs[runtimePath] = Handlebars;
+    Handlebars.registerHelper('someKnownHelper', function () {
+      return 'some known helper';
+    });
+
+    testTemplate(loader, './with-known-helpers.handlebars', {
+      query: '?knownHelpers[]=someKnownHelper',
+      stubs: stubs
     }, function (err, output, require) {
-      assert.ok(output.indexOf('helpers.unknownMissingHelp') > 0,
-        'expects unknownMissingHelp to be a helper');
-      assert.ok(output.indexOf('require("./unknownExistingHelper")') > 0,
-        'expect unknownExistingHelper to be required');
+      assert.ok(output, 'generated output');
+      assert.ok(output.indexOf('some known helper') >= 0);
+      assert.ok(!require.calledWith('./someKnownHelper'), 'should not have tried to dynamically require helper');
       done();
     });
   });
