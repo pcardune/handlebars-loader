@@ -39,12 +39,19 @@ module.exports = function(source) {
 	var foundUnclearStuff = {};
 	var knownHelpers = {};
 
+	var queryKnownHelpers = query.knownHelpers;
+	if (queryKnownHelpers) {
+		[].concat(queryKnownHelpers).forEach(function(k) {
+			knownHelpers[k] = true;
+		});
+	}
+
 	var inlineRequires = query.inlineRequires;
 	if (inlineRequires) {
 		inlineRequires = new RegExp(inlineRequires);
 	}
 
-	var debug = false;
+	var debug = query.debug;
 
 	var hb = handlebars.create();
 	var JavaScriptCompiler = hb.JavaScriptCompiler;
