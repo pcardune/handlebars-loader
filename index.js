@@ -29,10 +29,13 @@ module.exports = function(source) {
 		extensions = extensions.split(/[ ,;]/g);
 	}
 
-	var rootRelative = query.rootRelative;
-	if (rootRelative == null) {
-		rootRelative = "./";
-	}
+	var rootRelative = query.rootRelative || "./";
+	var aliases = (query.alias || []).map(function (alias) {
+		return {
+			from: new RegExp(alias.from),
+			to: alias.to
+		};
+	});
 
 	var foundPartials = {};
 	var foundHelpers = {};
@@ -122,12 +125,24 @@ module.exports = function(source) {
 		}
 
 		function referenceToRequest(ref, type) {
-			if (/^\$/.test(ref))
+			if (/^\$/.test(ref)) {
 				return ref.substring(1);
-			else if (type === 'helper' && query.helperDirs && query.helperDirs.length)
+			} else if (type === 'helper' && query.helperDirs && query.helperDirs.length) {
 				return ref;
-			else
-				return rootRelative + ref;
+			} else {
+				var isAliased;
+
+				aliases
+					.filter(function (alias) {
+						return alias.from.test(ref);
+					})
+					.forEach(function (alias) {
+						isAliased = true;
+						ref = ref.replace(alias.from, alias.to);
+					});
+
+				return isAliased ? ref : rootRelative + ref;
+			}
 		}
 
 		// Need another compiler pass?
