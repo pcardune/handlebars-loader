@@ -153,22 +153,41 @@ module.exports = function(source) {
 				contexts = contexts.concat(query.helperDirs);
 			}
 
+			var requestVariants = ["./" + request, request];
+			if (/[a-z]+([A-Z][a-z]+)/.test(request)) {
+				var hyphenated = request.replace(/[A-Z]/g, function (group) {
+					return "-" + group.toLowerCase();
+				});
+				requestVariants.push("./" + hyphenated);
+				requestVariants.push(hyphenated);
+			}
+
+			var combinations = [];
+			contexts.forEach(function (context) {
+				requestVariants.forEach(function (variant) {
+					combinations.push({ context: context, variant: variant });
+				});
+			});
+
 			var resolveWithContexts = function() {
-				var context = contexts.shift();
+				var combination = combinations.shift();
+				var thisContext = combination.context;
+				var thisRequest = combination.variant;
 
 				var traceMsg;
 				if (debug) {
-					traceMsg = path.normalize(context + "\\" + request);
+					traceMsg = path.normalize(thisContext + "\\" + thisRequest);
 					console.log("Attempting to resolve %s %s", type, traceMsg);
-					console.log("request=%s", request);
+					console.log("request=%s", thisRequest);
 				}
 
-				loaderApi.resolve(context, request, function(err, result) {
+				// console.log(thisContext, thisRequest);
+				loaderApi.resolve(thisContext, thisRequest, function(err, result) {
 					if (!err && result) {
 						if (debug) console.log("Resolved %s %s", type, traceMsg);
 						return callback(err, result);
 					}
-					else if (contexts.length > 0) {
+					else if (combinations.length > 0) {
 						resolveWithContexts();
 					}
 					else {
