@@ -98,7 +98,7 @@ module.exports = function(source) {
 		};
 		MyJavaScriptCompiler.prototype.appendToBuffer = function (str) {
 			// This is a template (stringified HTML) chunk
-			if (str.indexOf('"') === 0) {
+			if (typeof str === "string" && str.indexOf('"') === 0) {
 				var replacements = findNestedRequires(str, inlineRequires);
 				str = fastreplace(str, replacements, function (match) {
 					return "\" + require(" + JSON.stringify(match) + ") + \"";
