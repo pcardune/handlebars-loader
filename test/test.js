@@ -338,4 +338,33 @@ describe('handlebars-loader', function () {
       done();
     });
   });
+
+  it('should find helpers and partials if inlineRequires is set', function (done) {
+    testTemplate(loader, './with-partials-helpers-inline-requires.handlebars', {
+      query: '?inlineRequires=^images\/',
+      stubs: {
+        './partial': require('./partial.handlebars'),
+        'partial': require('./partial.handlebars'),
+        'title': function (text) { return 'Title: ' + text; },
+        './description': function (text) { return 'Description: ' + text; },
+        './image': function (text) { return 'Image URL: ' + text; },
+        'images/path/to/image': 'http://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50'
+      },
+      data: TEST_TEMPLATE_DATA
+    }, function (err, output, require) {
+      assert.ok(output, 'generated output');
+      assert.ok(require.calledWith('partial'),
+        'should have loaded partial with module syntax');
+      assert.ok(require.calledWith('./partial'),
+        'should have loaded partial with relative syntax');
+      assert.ok(require.calledWith('title'),
+        'should have loaded helper with module syntax');
+      assert.ok(require.calledWith('./description'),
+        'should have loaded helper with relative syntax');
+      assert.ok(require.calledWith('images/path/to/image'),
+        'should have required image path');
+      done();
+    });
+  });
+
 });
