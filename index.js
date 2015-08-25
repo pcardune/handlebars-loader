@@ -41,9 +41,12 @@ module.exports = function(source) {
 	var foundHelpers = {};
 	var foundUnclearStuff = {};
 	var knownHelpers = {};
+	var allKnownHelpers = false;
 
 	var queryKnownHelpers = query.knownHelpers;
-	if (queryKnownHelpers) {
+	if (queryKnownHelpers === true) {
+		allKnownHelpers = true;
+	}	else if (queryKnownHelpers) {
 		[].concat(queryKnownHelpers).forEach(function(k) {
 			knownHelpers[k] = true;
 		});
@@ -153,7 +156,7 @@ module.exports = function(source) {
 
 		try {
 			template = hb.precompile(source, {
-				knownHelpersOnly: firstCompile ? false : true,
+				knownHelpersOnly: (allKnownHelpers || firstCompile) ? false : true,
 				knownHelpers: knownHelpers
 			});
 		} catch (err) {
