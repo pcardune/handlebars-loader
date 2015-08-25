@@ -47,7 +47,8 @@ The following query options are supported:
  - *extensions*: Searches for templates with alternate extensions. Defaults are .handlebars, .hbs, and '' (no extension).
  - *inlineRequires*: Defines a regex that identifies strings within helper/partial parameters that should be replaced by inline require statements.
  - *rootRelative*: When automatically resolving partials and helpers, use an implied root path if none is present. Default = `./`. Setting this to be empty effectively turns off automatically resolving relative handlebars resources for items like `{{helper}}`. `{{./helper}}` will still resolve as expected.
- - *knownHelpers*: Array of helpers that are registered at runtime and should not explicitly be required by webpack. This helps with interoperability for libraries like Thorax [helpers](http://thoraxjs.org/api.html#template-helpers).
+ - *alias*: Array of aliases to use when resolving references. Each alias should have a `from` property with a pattern to match, and `to` with the string to insert as a replacement. Example: `alias: [{ from: "^common\/", to: "../../libs/shared" }]` If `require("common/util")` doesn't find a match, the loader will try `require("../../libs/shared/util")`
+ - *knownHelpers*: Array of helpers that are registered at runtime and should not explicitly be required by webpack. This helps with interoperability for libraries like Thorax [helpers](http://thoraxjs.org/api.html#template-helpers). Can be set to `true` to assume all helpers are known and registered at runtime.
  - *debug*: Shows trace information to help debug issues (e.g. resolution of helpers).
 
 See [`webpack`](https://github.com/webpack/webpack) documentation for more information regarding loaders.
