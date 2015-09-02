@@ -134,13 +134,15 @@ module.exports = function(source) {
 		var needRecompile = false;
 
 		// Precompile template
-		var template;
+		var template = '';
 
 		try {
-			template = hb.precompile(source, {
-				knownHelpersOnly: firstCompile ? false : true,
-				knownHelpers: knownHelpers
-			});
+			if (source) {
+				template = hb.precompile(source, {
+					knownHelpersOnly: firstCompile ? false : true,
+					knownHelpers: knownHelpers
+				});
+			}
 		} catch (err) {
 			return loaderAsyncCallback(err);
 		}
@@ -247,9 +249,13 @@ module.exports = function(source) {
 				return compile();
 			}
 
-			// export as module
-			loaderAsyncCallback(null, 'var Handlebars = require(' + JSON.stringify(runtimePath) + ');\n'
-				+ 'module.exports = (Handlebars["default"] || Handlebars).template(' + template + ');');
+			// export as module if template is not blank
+			var slug = template ?
+				'var Handlebars = require(' + JSON.stringify(runtimePath) + ');\n'
+				+ 'module.exports = (Handlebars["default"] || Handlebars).template(' + template + ');' :
+				'module.exports = function(){return "";};';
+
+			loaderAsyncCallback(null, slug);
 		};
 
 		var resolvePartials = function(err) {
