@@ -6,6 +6,8 @@ function WebpackLoaderMock (options) {
   this.query = options.query;
   this._asyncCallback = options.async;
   this._resolveStubs = options.resolveStubs || {};
+  this.sourceMap = options.sourceMap;
+  this.resourcePath = options.resourcePath;
 }
 
 WebpackLoaderMock.prototype.resolve = function (context, resource, callback) {
