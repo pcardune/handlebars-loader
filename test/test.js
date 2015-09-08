@@ -77,6 +77,15 @@ describe('handlebars-loader', function () {
     });
   });
 
+  it('should not require handlebars for empty templates', function (done) {
+    testTemplate(loader, './empty.handlebars', {
+      data: TEST_TEMPLATE_DATA
+    }, function (err, output, require) {
+      assert.equal(require.callCount, 0);
+      done();
+    });
+  });
+
   it('should convert helpers into require statements', function (done) {
     testTemplate(loader, './with-helpers.handlebars', {
       stubs: {
