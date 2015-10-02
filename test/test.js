@@ -225,17 +225,17 @@ describe('handlebars-loader', function () {
     var handlebarsAPI = { template: templateStub };
 
     testTemplate(loader, './simple.handlebars', {
-      query: '?runtime=handlebars/runtime.js', // runtime actually gets required() as part of version check, so we specify real path to runtime but specify the extension so we know loader is using our custom version.
+      query: '?runtime=handlebars/dist/handlebars.runtime.js', // runtime actually gets required() as part of version check, so we specify real path to runtime but specify the extension so we know loader is using our custom version.
       stubs: {
-        'handlebars/runtime.js': {
+        'handlebars/dist/handlebars.runtime.js': {
           default: handlebarsAPI
         }
       }
     }, function (err, output, require) {
       assert.ok(output, 'generated output');
-      assert.ok(require.calledWith('handlebars/runtime.js'),
+      assert.ok(require.calledWith('handlebars/dist/handlebars.runtime.js'),
         'should have required handlebars runtime from user-specified path');
-      assert.ok(!require.calledWith('handlebars/runtime'),
+      assert.ok(!require.calledWith('handlebars/dist/handlebars.runtime'),
         'should not have required default handlebars runtime');
       done();
     });
@@ -245,7 +245,7 @@ describe('handlebars-loader', function () {
     var templateStub = getStubbedHandlebarsTemplateFunction();
     // The loader will require the runtime by absolute path, need to know that
     // in order to stub it properly
-    var runtimePath = require.resolve('handlebars/runtime');
+    var runtimePath = require.resolve('handlebars/dist/handlebars.runtime');
 
     function testWithHandlebarsAPI(api) {
       return function (next) {
@@ -297,11 +297,11 @@ describe('handlebars-loader', function () {
   });
 
   it('allows specifying known helpers', function (done) {
-    var runtimePath = require.resolve('handlebars/runtime');
+    var runtimePath = require.resolve('handlebars/dist/handlebars.runtime');
     var stubs = {};
 
     // Need to set up a stubbed handlebars runtime that has our known helper loaded in
-    var Handlebars = require('handlebars/runtime').default.create();
+    var Handlebars = require('handlebars/dist/handlebars.runtime').default.create();
     stubs[runtimePath] = Handlebars;
     Handlebars.registerHelper('someKnownHelper', function () {
       return 'some known helper';
