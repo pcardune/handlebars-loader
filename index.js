@@ -73,7 +73,7 @@ module.exports = function(source) {
 		}
 		else if (type === "helper") {
 			if (foundHelpers["$" + name]) {
-				return "require(" + JSON.stringify(foundHelpers["$" + name]) + ")";
+				return "__default(require(" + JSON.stringify(foundHelpers["$" + name]) + "))";
 			}
 			foundHelpers["$" + name] = null;
 			return JavaScriptCompiler.prototype.nameLookup.apply(this, arguments);
@@ -252,6 +252,7 @@ module.exports = function(source) {
 			// export as module if template is not blank
 			var slug = template ?
 				'var Handlebars = require(' + JSON.stringify(runtimePath) + ');\n'
+				+ 'function __default(obj) { return obj && (obj.__esModule ? obj["default"] : obj); }\n'
 				+ 'module.exports = (Handlebars["default"] || Handlebars).template(' + template + ');' :
 				'module.exports = function(){return "";};';
 
