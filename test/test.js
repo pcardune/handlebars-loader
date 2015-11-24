@@ -3,6 +3,7 @@ var assert = require('assert'),
     fs = require('fs'),
     path = require('path'),
     sinon = require('sinon'),
+    handlebars = require('handlebars'),
 
     loader = require('../'),
     WebpackLoaderMock = require('./lib/WebpackLoaderMock'),
@@ -31,10 +32,16 @@ function loadTemplate(templatePath) {
 }
 
 function testTemplate(loader, template, options, testFn) {
-  var resolveStubs = {};
+  var resolveStubs = {},
+      registeredPartials = [];
 
   for (var k in options.stubs) {
     resolveStubs[k] = k;
+  }
+
+  // Simulate registered partials from somewhere else
+  for (var partial in options.precompiledStubs) {
+    registeredPartials.push('Handlebars.registerPartial("' + partial + '", (Handlebars["default"] || Handlebars).template(' + options.precompiledStubs[partial] + '))');
   }
 
   loader.call(new WebpackLoaderMock({
@@ -46,6 +53,14 @@ function testTemplate(loader, template, options, testFn) {
         return testFn(err);
       } else if (!source) {
         return testFn(new Error('Could not generate template'));
+      }
+
+      // If template use partials already registered through Handlebars
+      // We add them to the tested source
+      if (registeredPartials.length) {
+        source = source.split('\n');
+        source.splice(1, 0, registeredPartials[0], registeredPartials[1]);
+        source = source.join('\n');
       }
 
       applyTemplate(source, {
@@ -116,6 +131,26 @@ describe('handlebars-loader', function () {
         'should have loaded partial with module syntax');
       assert.ok(require.calledWith('./partial'),
         'should have loaded partial with relative syntax');
+      done();
+    });
+  });
+
+  it('should not require partials if disablePartialsResolving is used', function (done) {
+
+    var precompiledPartial = handlebars.precompile(fs.readFileSync('./test/partial.handlebars', 'utf8'));
+
+    testTemplate(loader, './with-partials.handlebars', {
+      query: '?disablePartialsResolving=true',
+      data: TEST_TEMPLATE_DATA,
+      precompiledStubs: {
+        $partial: precompiledPartial,
+        partial: precompiledPartial
+      }
+    }, function (err, output, require) {
+      assert.ok(output, 'generated output');
+      // There will actually be 1 require for the main handlebars runtime library
+      assert.equal(require.callCount, 1,
+        'should not have required anything extra');
       done();
     });
   });

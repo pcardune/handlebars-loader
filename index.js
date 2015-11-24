@@ -15,6 +15,7 @@ module.exports = function(source) {
 	var loaderApi = this;
 	var query = this.query instanceof Object ? this.query : loaderUtils.parseQuery(this.query);
 	var runtimePath = query.runtime || require.resolve("handlebars/runtime");
+	var isPartialsResolvingDisabled = query.disablePartialsResolving || false;
 
 	if (!versionCheck(handlebars, require(runtimePath))) {
 		throw new Error('Handlebars compiler version does not match runtime version');
@@ -267,7 +268,9 @@ module.exports = function(source) {
 			}
 
 			// Resolve path for each partial
-			async.forEach(Object.keys(foundPartials), resolvePartialsIterator, doneResolving);
+			// Can be disabled through the query
+			var partialsToResolve = isPartialsResolvingDisabled ? {} : foundPartials;
+			async.forEach(Object.keys(partialsToResolve), resolvePartialsIterator, doneResolving);
 		};
 
 		var resolveUnclearStuff = function(err) {
