@@ -64,28 +64,26 @@ module.exports = function(source) {
 		if (debug) {
 			console.log("nameLookup %s %s %s", parent, name, type);
 		}
-		if (type === "partial") {
+		if (query.loadPartials && type === "partial") {
 			if (foundPartials["$" + name]) {
 				return "require(" + JSON.stringify(foundPartials["$" + name]) + ")";
 			}
+
 			foundPartials["$" + name] = null;
-			return JavaScriptCompiler.prototype.nameLookup.apply(this, arguments);
 		}
-		else if (type === "helper") {
+		else if (query.loadHelpers && type === "helper") {
 			if (foundHelpers["$" + name]) {
 				return "require(" + JSON.stringify(foundHelpers["$" + name]) + ")";
 			}
+
 			foundHelpers["$" + name] = null;
-			return JavaScriptCompiler.prototype.nameLookup.apply(this, arguments);
 		}
-		else if (type === "context") {
+		else if (query.loadHelpers && type === "context") {
 			// This could be a helper too, save it to check it later
 			if (!foundUnclearStuff["$" + name]) foundUnclearStuff["$" + name] = false;
-			return JavaScriptCompiler.prototype.nameLookup.apply(this, arguments);
 		}
-		else {
-			return JavaScriptCompiler.prototype.nameLookup.apply(this, arguments);
-		}
+
+		return JavaScriptCompiler.prototype.nameLookup.apply(this, arguments);
 	};
 
 	if (inlineRequires) {
