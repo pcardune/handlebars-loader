@@ -1,5 +1,7 @@
 # handlebars-loader
 
+[![Circle CI](https://circleci.com/gh/viadeo/handlebars-loader.svg?style=svg)](https://circleci.com/gh/viadeo/handlebars-loader)
+
 A [`handlebars`](http://handlebarsjs.com) template loader for [`webpack`](https://github.com/webpack/webpack).
 
 *Handlebars 4 now supported*
