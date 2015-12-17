@@ -10,12 +10,19 @@ function versionCheck(hbCompiler, hbRuntime) {
 	return hbCompiler.COMPILER_REVISION === (hbRuntime["default"] || hbRuntime).COMPILER_REVISION;
 }
 
+function processPartialName(partialPath, resolveRoot) {
+	return partialPath.replace(resolveRoot, '').replace(/\.hbs$/, '');
+}
+
 module.exports = function(source) {
 	if (this.cacheable) this.cacheable();
 	var loaderApi = this;
 	var query = this.query instanceof Object ? this.query : loaderUtils.parseQuery(this.query);
 	var runtimePath = query.runtime || require.resolve("handlebars/runtime");
 	var isPartialsResolvingDisabled = query.disablePartialsResolving || false;
+	var autoRegisterPartials = query.autoRegisterPartials || false;
+	var resourcePath = loaderApi.resourcePath;
+	var resolveRoot = loaderApi.options instanceof Object ? loaderApi.options.resolve.root : '';
 
 	// Let user give another compiler if handlebars module in package.json is not the right version
 	if (query.handlebarsCompiler) {
@@ -255,11 +262,16 @@ module.exports = function(source) {
 				return compile();
 			}
 
-			// export as module if template is not blank
-			var slug = template ?
-				'var Handlebars = require(' + JSON.stringify(runtimePath) + ');\n'
-				+ 'module.exports = (Handlebars["default"] || Handlebars).template(' + template + ');' :
-				'module.exports = function(){return "";};';
+			var slug = template || autoRegisterPartials ? 'var Handlebars = require(' + JSON.stringify(runtimePath) + ');\n': '';
+
+			// write template function if not blank
+			var templateFunction = template ? '(Handlebars["default"] || Handlebars).template(' + template + ')' : 'function(){return "";}';
+
+			if (autoRegisterPartials) {
+				slug += '(Handlebars["default"] || Handlebars).registerPartial(' + JSON.stringify(processPartialName(resourcePath, resolveRoot)) + ', ' + templateFunction + ');'
+			} else {
+				slug += 'module.exports = ' + templateFunction + ';'
+			}
 
 			loaderAsyncCallback(null, slug);
 		};
