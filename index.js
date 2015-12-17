@@ -17,6 +17,11 @@ module.exports = function(source) {
 	var runtimePath = query.runtime || require.resolve("handlebars/runtime");
 	var isPartialsResolvingDisabled = query.disablePartialsResolving || false;
 
+	// Let user give another compiler if handlebars module in package.json is not the right version
+	if (query.handlebarsCompiler) {
+		handlebars = require(query.handlebarsCompiler);
+	}
+
 	if (!versionCheck(handlebars, require(runtimePath))) {
 		throw new Error('Handlebars compiler version does not match runtime version');
 	}
