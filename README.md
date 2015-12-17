@@ -6,10 +6,10 @@ A [`handlebars`](http://handlebarsjs.com) template loader for [`webpack`](https:
 
 *Handlebars 4 now supported*
 
-**This a fork made by the Viadeo Team to adapt the Handlebars loader to follow our historic build conventions. No PR to original repositoru because we felt these changes were too specific to our needs.**
+**This fork is made by the Viadeo Team to adapt the Handlebars loader to our historic build conventions. No PR to original repository because we felt these changes were too specific.**
 
 What this fork adds:
-- Query parameter to disable the automatic resolving of the discovered partials when precompiling the template files. This means all the partials needs to be registered "manually" before using them.
+- Query parameter to disable the automatic resolving of discovered partials when precompiling the template files. This means all the partials needs to be registered "manually" before using them.
 
 ## General Usage
 
