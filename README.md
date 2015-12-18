@@ -9,7 +9,7 @@ A [`handlebars`](http://handlebarsjs.com) template loader for [`webpack`](https:
 **This fork is made by the Viadeo Team to adapt the Handlebars loader to our historic build conventions. No PR to original repository because we felt these changes were too specific.**
 
 What this fork adds:
-- Query parameter to disable the automatic resolving of discovered partials when precompiling the template files. This means all the partials needs to be registered "manually" before using them.
+- Query parameter to disable the automatic resolving of discovered helpers and partials when precompiling the template files. This means all the helpers partials needs to be registered "manually" before using them.
 - Query parameter to add the `registerPartial` statement directly in the produced template file
 - Query parameter to specify the path to the Handlebars compiler to use. By default `handlebars-loader` takes the compiler from handlebars module declared in the project's package.json
 
@@ -57,7 +57,7 @@ The following query options are supported:
  - *inlineRequires*: Defines a regex that identifies strings within helper/partial parameters that should be replaced by inline require statements.
  - *rootRelative*: When automatically resolving partials and helpers, use an implied root path if none is present. Default = `./`. Setting this to be empty effectively turns off automatically resolving relative handlebars resources for items like `{{helper}}`. `{{./helper}}` will still resolve as expected.
  - *knownHelpers*: Array of helpers that are registered at runtime and should not explicitly be required by webpack. This helps with interoperability for libraries like Thorax [helpers](http://thoraxjs.org/api.html#template-helpers).
- - *disablePartialResolving*: Set it to `true` if you don't want the loader to resolve partials automatically. (you will need to do it yourself). Defaults to `false`: the loader will resolve partials
+ - *disableAutoResolving*: Set it to `true` if you don't want the loader to resolve helpers and partials automatically. (you will need to do it yourself). Defaults to `false`: the loader will resolve helpers and partials
  - *handlebarsCompiler*: Specify the path to the handlebars compiler library. Defaults will automatically retrieve the compiler from the handlebars module declared in the project's package.json
  - *autoRegisterPartials*: Set it to `true` if you want to insert a `registerPartial` statement in the compiled template file. The name of the partial will be its path from the resolving root defined in Webpack's config, without the .hbs extension
  - *debug*: Shows trace information to help debug issues (e.g. resolution of helpers).
