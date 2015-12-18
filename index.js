@@ -19,7 +19,7 @@ module.exports = function(source) {
 	var loaderApi = this;
 	var query = this.query instanceof Object ? this.query : loaderUtils.parseQuery(this.query);
 	var runtimePath = query.runtime || require.resolve("handlebars/runtime");
-	var isPartialsResolvingDisabled = query.disablePartialsResolving || false;
+	var isAutoResolvingDisabled = query.disableAutoResolving || false;
 	var autoRegisterPartials = query.autoRegisterPartials || false;
 	var resourcePath = loaderApi.resourcePath;
 	var resolveRoot = loaderApi.options instanceof Object ? loaderApi.options.resolve.root : '';
@@ -285,9 +285,7 @@ module.exports = function(source) {
 			}
 
 			// Resolve path for each partial
-			// Can be disabled through the query
-			var partialsToResolve = isPartialsResolvingDisabled ? {} : foundPartials;
-			async.forEach(Object.keys(partialsToResolve), resolvePartialsIterator, doneResolving);
+			async.forEach(Object.keys(foundPartials), resolvePartialsIterator, doneResolving);
 		};
 
 		var resolveUnclearStuff = function(err) {
@@ -305,13 +303,23 @@ module.exports = function(source) {
 		var resolveHelpers = function(err) {
 			if (err) throw resolveUnclearStuff(err);
 
-			if (debug) {
-				console.log("Attempting to resolve helpers:");
-				console.log(foundHelpers);
-			}
+			if (isAutoResolvingDisabled) {
 
-			// Resolve path for each helper
-			async.forEach(Object.keys(foundHelpers), resolveHelpersIterator, resolveUnclearStuff);
+				if (debug) {
+					console.log("Auto-resolving disabled: not attempting to resolve helpers/partials, straight to compile");
+				}
+
+				doneResolving();
+			} else {
+
+				if (debug) {
+					console.log("Attempting to resolve helpers:");
+					console.log(foundHelpers);
+				}
+
+				// Resolve path for each helper
+				async.forEach(Object.keys(foundHelpers), resolveHelpersIterator, resolveUnclearStuff);
+			}
 		};
 
 		resolveHelpers();

@@ -33,15 +33,21 @@ function loadTemplate(templatePath) {
 
 function testTemplate(loader, template, options, testFn) {
   var resolveStubs = {},
+      registeredHelpers = [],
       registeredPartials = [];
 
   for (var k in options.stubs) {
     resolveStubs[k] = k;
   }
 
+  // Simulate registered helpers from somewhere else
+  for (var helper in options.existingHelpers) {
+    registeredHelpers.push('Handlebars.registerHelper("' + helper + '", ' + options.existingHelpers[helper] + ')');
+  }
+
   // Simulate registered partials from somewhere else
-  for (var partial in options.precompiledStubs) {
-    registeredPartials.push('Handlebars.registerPartial("' + partial + '", (Handlebars["default"] || Handlebars).template(' + options.precompiledStubs[partial] + '))');
+  for (var partial in options.precompiledPartials) {
+    registeredPartials.push('Handlebars.registerPartial("' + partial + '", (Handlebars["default"] || Handlebars).template(' + options.precompiledPartials[partial] + '))');
   }
 
   loader.call(new WebpackLoaderMock({
@@ -53,6 +59,14 @@ function testTemplate(loader, template, options, testFn) {
         return testFn(err);
       } else if (!source) {
         return testFn(new Error('Could not generate template'));
+      }
+
+      // If template use helpers already registered through Handlebars
+      // We add them to the tested source
+      if (registeredHelpers.length) {
+        source = source.split('\n');
+        source.splice(1, 0, registeredHelpers[0], registeredHelpers[1]);
+        source = source.join('\n');
       }
 
       // If template use partials already registered through Handlebars
@@ -118,6 +132,29 @@ describe('handlebars-loader', function () {
     });
   });
 
+  it('should not require helpers if disableAutoResolving is used', function (done) {
+
+    testTemplate(loader, './with-helpers.handlebars', {
+      query: '?disableAutoResolving=true',
+      stubs: {
+        'title': function (text) { return 'Title: ' + text; },
+        './description': function (text) { return 'Description: ' + text; }
+      },
+      existingHelpers: {
+        '$title': function (text) { return 'Title: ' + text; },
+        'description': function (text) { return 'Description: ' + text; }
+      },
+      data: TEST_TEMPLATE_DATA
+    }, function (err, output, require) {
+      assert.ok(output, 'generated output');
+      // There will actually be 1 require for the main handlebars runtime library
+      assert.equal(require.callCount, 1,
+        'should not have required anything extra');
+      done();
+    });
+  });
+
+
   it('should convert partials into require statements', function (done) {
     testTemplate(loader, './with-partials.handlebars', {
       stubs: {
@@ -135,14 +172,14 @@ describe('handlebars-loader', function () {
     });
   });
 
-  it('should not require partials if disablePartialsResolving is used', function (done) {
+  it('should not require partials if disableAutoResolving is used', function (done) {
 
     var precompiledPartial = handlebars.precompile(fs.readFileSync('./test/partial.handlebars', 'utf8'));
 
     testTemplate(loader, './with-partials.handlebars', {
-      query: '?disablePartialsResolving=true',
+      query: '?disableAutoResolving=true',
       data: TEST_TEMPLATE_DATA,
-      precompiledStubs: {
+      precompiledPartials: {
         $partial: precompiledPartial,
         partial: precompiledPartial
       }
