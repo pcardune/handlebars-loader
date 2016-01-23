@@ -154,7 +154,9 @@ module.exports = function(source) {
 			if (query.helperDirs) {
 				contexts = contexts.concat(query.helperDirs);
 			}
-
+			if (query.partialDirs) {
+				contexts = contexts.concat(query.partialDirs);
+			}
 			var resolveWithContexts = function() {
 				var context = contexts.shift();
 
