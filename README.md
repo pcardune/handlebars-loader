@@ -1,3 +1,7 @@
+# This project needs a new maintainer!
+
+I'm not actively maintaining this project.  There are a LOT of users so if someone would like to take over ownership, please let me know.  See this issue for discussion: https://github.com/altano/handlebars-loader/issues/79
+
 # handlebars-loader
 
 A [`handlebars`](http://handlebarsjs.com) template loader for [`webpack`](https://github.com/webpack/webpack).
