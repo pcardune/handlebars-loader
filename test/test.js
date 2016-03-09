@@ -170,6 +170,16 @@ describe('handlebars-loader', function () {
     });
   });
 
+  it('allows excluding paths from resolving', function (done) {
+    testTemplate(loader, './with-excluded-helpers.handlebars', {
+      query: '?helperDirs[]=' + path.join(__dirname, 'helpers') + '&exclude=helpers',
+      data: { image: 'a' }
+    }, function (err, output, require) {
+      assert.equal(output, 'a\n');
+      done();
+    });
+  });
+
   it('should find helpers in subdirectories', function (done) {
     testTemplate(loader, './with-nested-helper.handlebars', {
       query: '?helperDirs[]=' + path.join(__dirname, 'helpers'),

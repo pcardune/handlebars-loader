@@ -51,6 +51,11 @@ module.exports = function(source) {
 		inlineRequires = new RegExp(inlineRequires);
 	}
 
+	var exclude = query.exclude;
+	if (exclude) {
+		exclude = new RegExp(exclude);
+	}
+
 	var debug = query.debug;
 
 	var hb = handlebars.create();
@@ -165,17 +170,29 @@ module.exports = function(source) {
 					console.log("request=%s", request);
 				}
 
-				loaderApi.resolve(context, request, function(err, result) {
-					if (!err && result) {
-						if (debug) console.log("Resolved %s %s", type, traceMsg);
-						return callback(err, result);
-					}
-					else if (contexts.length > 0) {
+				var next = function(err) {
+					if (contexts.length > 0) {
 						resolveWithContexts();
 					}
 					else {
 						if (debug) console.log("Failed to resolve %s %s", type, traceMsg);
-						return callback(err, result);
+						return callback(err);
+					}
+				}
+
+				loaderApi.resolve(context, request, function(err, result) {
+					if (!err && result) {
+						if (exclude && exclude.test(result)) {
+							if (debug) console.log("Excluding %s %s", type, traceMsg);
+							return next();
+						}
+						else {
+							if (debug) console.log("Resolved %s %s", type, traceMsg);
+							return callback(err, result);
+						}
+					}
+					else {
+						return next(err);
 					}
 				});
 			};
