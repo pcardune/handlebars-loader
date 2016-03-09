@@ -1,6 +1,6 @@
-# This project needs a new maintainer!
+# New Maintainer
 
-I'm not actively maintaining this project.  There are a LOT of users so if someone would like to take over ownership, please let me know.  See this issue for discussion: https://github.com/altano/handlebars-loader/issues/79
+@pcardune is the new maintainer of this project. If you are not getting traction on your pull request or issue, please mention @pcardune.
 
 # handlebars-loader
 
