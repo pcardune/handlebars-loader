@@ -5,6 +5,9 @@
     "Tobias Koppers @sokra",
     "Jason Anderson @diurnalist"
   ],
+  "maintainers": [
+    "Paul Carduner @pcardune"
+  ],
   "description": "handlebars loader module for webpack",
   "dependencies": {
     "async": "~0.2.10",
