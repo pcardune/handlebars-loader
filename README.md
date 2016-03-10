@@ -1,6 +1,5 @@
-# New Maintainer
-
-@pcardune is the new maintainer of this project. If you are not getting traction on your pull request or issue, please mention @pcardune.
+[![Build Status](https://travis-ci.org/pcardune/handlebars-loader.svg?branch=master)](https://travis-ci.org/pcardune/handlebars-loader)
+[![Coverage Status](https://coveralls.io/repos/github/pcardune/handlebars-loader/badge.svg?branch=master)](https://coveralls.io/github/pcardune/handlebars-loader?branch=master)
 
 # handlebars-loader
 
