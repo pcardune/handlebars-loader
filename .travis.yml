@@ -9,6 +9,6 @@ branches:
   only:
     - master
 script:
-  - npm coverage
+  - npm run coverage
 after_success:
   - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
