@@ -8,5 +8,7 @@ cache:
 branches:
   only:
     - master
+script:
+  - npm coverage
 after_success:
   - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
