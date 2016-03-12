@@ -70,6 +70,10 @@ module.exports = function(source) {
 			console.log("nameLookup %s %s %s", parent, name, type);
 		}
 		if (type === "partial") {
+			if (name[0] == '@') {
+				// this is a built in partial, no need to require it
+				return JavaScriptCompiler.prototype.nameLookup.apply(this, arguments);
+			}
 			if (foundPartials["$" + name]) {
 				return "require(" + JSON.stringify(foundPartials["$" + name]) + ")";
 			}
