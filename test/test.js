@@ -385,5 +385,19 @@ describe('handlebars-loader', function () {
       done();
     });
   });
+  
+  it('should be able to use babel6/es6 helpers', function (done) {
+    testTemplate(loader, './with-helpers-babel.handlebars', {
+      query: '?' + JSON.stringify({
+        helperDirs: [
+          path.join(__dirname, 'helpers-babel'),
+        ]
+      }),
+      data: TEST_TEMPLATE_DATA
+    }, function (err, output, require) {
+      assert.ok(output, 'Description Description');
+      done();
+    });
+  });
 
 });
