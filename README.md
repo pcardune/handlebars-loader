@@ -3,7 +3,7 @@
 
 # handlebars-loader
 
-A [`handlebars`](http://handlebarsjs.com) template loader for [`webpack`](https://github.com/webpack/webpack).
+A [handlebars](http://handlebarsjs.com) template loader for [webpack](https://github.com/webpack/webpack).
 
 *Handlebars 4 now supported*
 
@@ -58,7 +58,11 @@ See [`webpack`](https://github.com/webpack/webpack) documentation for more infor
 
 ## Full examples
 
-See `examples` folder in this repo. The examples are fully runnable and demonstrate a number of concepts (using partials and helpers) -- just run `webpack` in that directory to produce dist/bundle.js in the same folder, open index.html.
+See the [examples](examples/) folder in this repo. The examples are fully runnable and demonstrate a number of concepts (using partials and helpers) -- just run `webpack` in that directory to produce `dist/bundle.js` in the same folder, open index.html.
+
+## Change Log
+
+See the [CHANGELOG.md](https://github.com/pcardune/handlebars-loader/blob/master/CHANGELOG.md) file.
 
 ## License
 
