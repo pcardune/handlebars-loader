@@ -3,6 +3,7 @@ var handlebars = require("handlebars");
 var async = require("async");
 var util = require("util");
 var path = require("path");
+var semver = require("semver");
 var fastreplace = require('./lib/fastreplace');
 var findNestedRequires = require('./lib/findNestedRequires');
 
@@ -15,6 +16,7 @@ module.exports = function(source) {
 	var loaderApi = this;
 	var query = this.query instanceof Object ? this.query : loaderUtils.parseQuery(this.query);
 	var runtimePath = query.runtime || require.resolve("handlebars/runtime");
+	var srcName = path.basename(this.resourcePath);
 
 	if (!versionCheck(handlebars, require(runtimePath))) {
 		throw new Error('Handlebars compiler version does not match runtime version');
@@ -57,6 +59,7 @@ module.exports = function(source) {
 	}
 
 	var debug = query.debug;
+	var useSrcMap = this.sourceMap && semver.satisfies(handlebars.VERSION, '>=3.0.0');
 
 	var hb = handlebars.create();
 	var JavaScriptCompiler = hb.JavaScriptCompiler;
@@ -144,13 +147,27 @@ module.exports = function(source) {
 
 		// Precompile template
 		var template = '';
+		var srcMap;
 
 		try {
 			if (source) {
-				template = hb.precompile(source, {
+				var precompileOptions = {
 					knownHelpersOnly: firstCompile ? false : true,
 					knownHelpers: knownHelpers
-				});
+				};
+
+				if (useSrcMap) {
+					precompileOptions.srcName = srcName;
+				}
+
+				var result = hb.precompile(source, precompileOptions);
+
+				if (useSrcMap) {
+					template = result.code;
+					srcMap = JSON.parse(result.map);
+				} else {
+					template = result;
+				}
 			}
 		} catch (err) {
 			return loaderAsyncCallback(err);
@@ -271,13 +288,13 @@ module.exports = function(source) {
 			}
 
 			// export as module if template is not blank
-			var slug = template ?
+			var output = template ?
 				'var Handlebars = require(' + JSON.stringify(runtimePath) + ');\n'
 				+ 'function __default(obj) { return obj && (obj.__esModule ? obj["default"] : obj); }\n'
 				+ 'module.exports = (Handlebars["default"] || Handlebars).template(' + template + ');' :
 				'module.exports = function(){return "";};';
 
-			loaderAsyncCallback(null, slug);
+			loaderAsyncCallback(null, output, srcMap);
 		};
 
 		var resolvePartials = function(err) {

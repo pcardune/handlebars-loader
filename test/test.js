@@ -14,7 +14,7 @@ var assert = require('assert'),
       object: {a: 'a', b: 'b', c: 'c'}
     };
 
-function applyTemplate(source, options) {
+function applyTemplate(source, map, options) {
   var requires = options && options.requireStubs || {},
       _require = sinon.spy(function (resource) {
         return requires[resource] || require(resource);
@@ -23,7 +23,7 @@ function applyTemplate(source, options) {
 
   (new Function('module', 'require', source))(_module, _require);
 
-  options.test(null, _module.exports(options.data), _require);
+  options.test(null, _module.exports(options.data), _require, map);
 }
 
 function loadTemplate(templatePath) {
@@ -39,8 +39,10 @@ function testTemplate(loader, template, options, testFn) {
 
   loader.call(new WebpackLoaderMock({
     query: options.query,
+    sourceMap: options.sourceMap,
     resolveStubs: resolveStubs,
-    async: function (err, source) {
+    resourcePath: template,
+    async: function (err, source, map) {
       if (err) {
         // Proxy errors from loader to test function
         return testFn(err);
@@ -48,7 +50,7 @@ function testTemplate(loader, template, options, testFn) {
         return testFn(new Error('Could not generate template'));
       }
 
-      applyTemplate(source, {
+      applyTemplate(source, map, {
         data: options.data,
         requireStubs: options.stubs,
         test: testFn
@@ -396,6 +398,18 @@ describe('handlebars-loader', function () {
       data: TEST_TEMPLATE_DATA
     }, function (err, output, require) {
       assert.ok(output, 'Description Description');
+      done();
+    });
+  });
+
+  it('should generate source map', function (done) {
+    testTemplate(loader, './simple.handlebars', {
+      sourceMap: true,
+      data: TEST_TEMPLATE_DATA
+    }, function (err, output, require, map) {
+      assert.ok(map);
+      assert.equal(map.sources.length, 1);
+      assert.equal(map.sources[0], 'simple.handlebars');
       done();
     });
   });
