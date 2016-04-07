@@ -225,7 +225,7 @@ module.exports = function(source) {
 			// Try every extension for partials
 			var i = 0;
 			(function tryExtension() {
-				if (i > extensions.length) {
+				if (i >= extensions.length) {
 					var errorMsg = util.format("Partial '%s' not found", partial.substr(1));
 					return partialCallback(new Error(errorMsg));
 				}
