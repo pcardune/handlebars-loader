@@ -280,40 +280,29 @@ module.exports = function(source) {
 			loaderAsyncCallback(null, slug);
 		};
 
-		var resolvePartials = function(err) {
-			if (err) return doneResolving(err);
+        var resolveItems = function(err, type, items, iterator, callback) {
+            if (err) return callback(err);
+
+            var itemKeys = Object.keys(items);
 
 			if (debug) {
-				console.log("Attempting to resolve partials:");
-				console.log(foundPartials);
+				console.log("Attempting to resolve ", type, ":", itemKeys);
 			}
 
-			// Resolve path for each partial
-			async.each(Object.keys(foundPartials), resolvePartialsIterator, doneResolving);
+			// Resolve path for each item
+			async.each(itemKeys, iterator, callback);
+        }
+
+		var resolvePartials = function(err) {
+            resolveItems(err, 'partials', foundPartials, resolvePartialsIterator, doneResolving);
 		};
 
 		var resolveUnclearStuff = function(err) {
-			if (err) return resolvePartials(err);
-
-			if (debug) {
-				console.log("Attempting to resolve unclearStuff:");
-				console.log(foundUnclearStuff);
-			}
-
-			// Check for each found unclear item if it is a helper
-			async.each(Object.keys(foundUnclearStuff), resolveUnclearStuffIterator, resolvePartials);
+            resolveItems(err, 'unclearStuff', foundUnclearStuff, resolveUnclearStuffIterator, resolvePartials);
 		};
 
 		var resolveHelpers = function(err) {
-			if (err) throw resolveUnclearStuff(err);
-
-			if (debug) {
-				console.log("Attempting to resolve helpers:");
-				console.log(foundHelpers);
-			}
-
-			// Resolve path for each helper
-			async.each(Object.keys(foundHelpers), resolveHelpersIterator, resolveUnclearStuff);
+            resolveItems(err, 'helpers', foundHelpers, resolveHelpersIterator, resolveUnclearStuff);
 		};
 
 		resolveHelpers();
