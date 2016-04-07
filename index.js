@@ -169,7 +169,7 @@ module.exports = function(source) {
 
 				var traceMsg;
 				if (debug) {
-					traceMsg = path.normalize(context + "\\" + request);
+					traceMsg = path.normalize(path.join(context, request));
 					console.log("Attempting to resolve %s %s", type, traceMsg);
 					console.log("request=%s", request);
 				}
