@@ -289,7 +289,7 @@ module.exports = function(source) {
 			}
 
 			// Resolve path for each partial
-			async.forEach(Object.keys(foundPartials), resolvePartialsIterator, doneResolving);
+			async.each(Object.keys(foundPartials), resolvePartialsIterator, doneResolving);
 		};
 
 		var resolveUnclearStuff = function(err) {
@@ -301,7 +301,7 @@ module.exports = function(source) {
 			}
 
 			// Check for each found unclear item if it is a helper
-			async.forEach(Object.keys(foundUnclearStuff), resolveUnclearStuffIterator, resolvePartials);
+			async.each(Object.keys(foundUnclearStuff), resolveUnclearStuffIterator, resolvePartials);
 		};
 
 		var resolveHelpers = function(err) {
@@ -313,7 +313,7 @@ module.exports = function(source) {
 			}
 
 			// Resolve path for each helper
-			async.forEach(Object.keys(foundHelpers), resolveHelpersIterator, resolveUnclearStuff);
+			async.each(Object.keys(foundHelpers), resolveHelpersIterator, resolveUnclearStuff);
 		};
 
 		resolveHelpers();
