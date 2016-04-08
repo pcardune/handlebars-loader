@@ -53,6 +53,7 @@ The following query options are supported:
  - *knownHelpers*: Array of helpers that are registered at runtime and should not explicitly be required by webpack. This helps with interoperability for libraries like Thorax [helpers](http://thoraxjs.org/api.html#template-helpers).
  - *exclude*: Defines a regex that will exclude paths from resolving. This can be used to prevent helpers from being resolved to modules in the `node_modules` directory.
  - *debug*: Shows trace information to help debug issues (e.g. resolution of helpers).
+ - *partialDirs*: Defines additional directories to be searched for partials. Allows partials to be defined in a directory and used globally without relative paths. See [example](https://github.com/altano/handlebars-loader/tree/master/examples/partialDirs)
 
 See [`webpack`](https://github.com/webpack/webpack) documentation for more information regarding loaders.
 

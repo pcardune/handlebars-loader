@@ -164,6 +164,11 @@ module.exports = function(source) {
 				contexts = contexts.concat(query.helperDirs);
 			}
 
+			// Any additional partial dirs will be added to the searchable contexts
+			if (query.partialDirs) {
+				contexts = contexts.concat(query.partialDirs);
+			}
+
 			var resolveWithContexts = function() {
 				var context = contexts.shift();
 
