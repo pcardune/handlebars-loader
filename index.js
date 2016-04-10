@@ -280,10 +280,10 @@ module.exports = function(source) {
 			loaderAsyncCallback(null, slug);
 		};
 
-        var resolveItems = function(err, type, items, iterator, callback) {
-            if (err) return callback(err);
+		var resolveItems = function(err, type, items, iterator, callback) {
+			if (err) return callback(err);
 
-            var itemKeys = Object.keys(items);
+			var itemKeys = Object.keys(items);
 
 			if (debug) {
 				console.log("Attempting to resolve ", type, ":", itemKeys);
@@ -291,18 +291,18 @@ module.exports = function(source) {
 
 			// Resolve path for each item
 			async.each(itemKeys, iterator, callback);
-        }
+		}
 
 		var resolvePartials = function(err) {
-            resolveItems(err, 'partials', foundPartials, resolvePartialsIterator, doneResolving);
+			resolveItems(err, 'partials', foundPartials, resolvePartialsIterator, doneResolving);
 		};
 
 		var resolveUnclearStuff = function(err) {
-            resolveItems(err, 'unclearStuff', foundUnclearStuff, resolveUnclearStuffIterator, resolvePartials);
+			resolveItems(err, 'unclearStuff', foundUnclearStuff, resolveUnclearStuffIterator, resolvePartials);
 		};
 
 		var resolveHelpers = function(err) {
-            resolveItems(err, 'helpers', foundHelpers, resolveHelpersIterator, resolveUnclearStuff);
+			resolveItems(err, 'helpers', foundHelpers, resolveHelpersIterator, resolveUnclearStuff);
 		};
 
 		resolveHelpers();
