@@ -385,7 +385,7 @@ describe('handlebars-loader', function () {
       done();
     });
   });
-  
+
   it('should be able to use babel6/es6 helpers', function (done) {
     testTemplate(loader, './with-helpers-babel.handlebars', {
       query: '?' + JSON.stringify({
@@ -396,6 +396,28 @@ describe('handlebars-loader', function () {
       data: TEST_TEMPLATE_DATA
     }, function (err, output, require) {
       assert.ok(output, 'Description Description');
+      done();
+    });
+  });
+
+  it('should allow partials to be declared in directories', function (done) {
+    testTemplate(loader, './with-dir-partials.handlebars', {
+      stubs: {
+        './partial': require('./partial.handlebars'),
+        './otherPartial': require('./partialDirs/otherPartial.handlebars')
+      },
+      data: TEST_TEMPLATE_DATA,
+      query: '?' + JSON.stringify({
+        partialDirs: [
+          path.join(__dirname, 'partialDirs')
+        ]
+      })
+    }, function (err, output, require) {
+      assert.ok(output, 'generated output');
+      assert.ok(require.calledWith('./partial'),
+        'should have loaded partial with relative syntax');
+      assert.ok(require.calledWith('./otherPartial'),
+        'should have loaded otherPartial with relative partialDirs syntax');
       done();
     });
   });
