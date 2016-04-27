@@ -54,6 +54,7 @@ The following query options are supported:
  - *exclude*: Defines a regex that will exclude paths from resolving. This can be used to prevent helpers from being resolved to modules in the `node_modules` directory.
  - *debug*: Shows trace information to help debug issues (e.g. resolution of helpers).
  - *partialDirs*: Defines additional directories to be searched for partials. Allows partials to be defined in a directory and used globally without relative paths. See [example](https://github.com/altano/handlebars-loader/tree/master/examples/partialDirs)
+ - *preventIndent*: Prevent partials from being indented inside their parent template.
 
 See [`webpack`](https://github.com/webpack/webpack) documentation for more information regarding loaders.
 
