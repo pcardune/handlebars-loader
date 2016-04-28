@@ -1,7 +1,7 @@
 # Change Log
 
 ## [Unreleased]
- - New `partialDirs` query option allows specifying additional directories to be searched for partials.
+ - New `partialDirs` query option allows specifying additional directories to be searched for partials. Thank you @lostthetrail.
 
 ## [1.2.0] - 2016-03-15
 
