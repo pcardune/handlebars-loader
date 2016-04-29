@@ -1,6 +1,12 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- Your feature here!
+
+## [1.3.0] - 2016-04-29
+
+### Added
 - New `partialDirs` query option allows specifying additional directories to be searched for partials. Thank you @lostthetrail.
 - New `preventIndent` query option to avoid nested partials adding whitespace to
   `textarea` and `pre` elements.
