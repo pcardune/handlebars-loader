@@ -1,3 +1,4 @@
+/* eslint-env mocha */
 var assert = require('assert'),
     async = require('async'),
     fs = require('fs'),
