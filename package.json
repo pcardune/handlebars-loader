@@ -30,6 +30,7 @@
   "version": "1.2.0",
   "devDependencies": {
     "coveralls": "^2.11.8",
+    "eslint": "^2.8.0",
     "html-loader": "^0.3.0",
     "istanbul": "^0.4.2",
     "mocha": "^1.21.4",
@@ -50,7 +51,8 @@
   },
   "scripts": {
     "test": "mocha",
-    "coverage": "istanbul cover _mocha"
+    "coverage": "istanbul cover _mocha",
+    "lint": "eslint lib/ test/ index.js"
   },
   "author": "",
   "license": "MIT"
