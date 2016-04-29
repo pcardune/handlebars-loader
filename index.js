@@ -149,7 +149,8 @@ module.exports = function(source) {
 			if (source) {
 				template = hb.precompile(source, {
 					knownHelpersOnly: firstCompile ? false : true,
-					knownHelpers: knownHelpers
+					knownHelpers: knownHelpers,
+					preventIndent: query.preventIndent
 				});
 			}
 		} catch (err) {
