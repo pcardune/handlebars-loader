@@ -345,11 +345,11 @@ describe('handlebars-loader', function () {
       data: TEST_TEMPLATE_DATA
     }, function (err, output, require) {
       assert.ok(output, 'generated output');
-      assert.ok(require.calledWith('image'),
-        'should have loaded helper');
+      assert.ok(!require.calledWith('image'),
+        'should not have loaded helper with module syntax');
 
-      assert.ok(require.calledWith('nested/quotify'),
-        'should have loaded nested helper');
+      assert.ok(!require.calledWith('nested/quotify'),
+        'should not have loaded nested helper with module syntax');
 
       assert.ok(require.calledWith('relative-partial'),
         'should have loaded partial with module syntax');
