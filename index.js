@@ -58,6 +58,8 @@ module.exports = function(source) {
 
   var debug = query.debug;
 
+  var ignorePartials = !!query.ignorePartials
+
   var hb = handlebars.create();
   var JavaScriptCompiler = hb.JavaScriptCompiler;
   function MyJavaScriptCompiler() {
@@ -230,7 +232,7 @@ module.exports = function(source) {
     };
 
     var resolvePartialsIterator = function(partial, partialCallback) {
-      if (foundPartials[partial]) return partialCallback();
+      if (ignorePartials || foundPartials[partial]) return partialCallback();
       var request = referenceToRequest(partial.substr(1), 'partial');
 
       // Try every extension for partials
