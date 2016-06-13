@@ -13,6 +13,7 @@ function versionCheck(hbCompiler, hbRuntime) {
 module.exports = function(source) {
   if (this.cacheable) this.cacheable();
   var loaderApi = this;
+  var resourcePath = this.resource;
   var query = this.query instanceof Object ? this.query : loaderUtils.parseQuery(this.query);
   var runtimePath = query.runtime || require.resolve("handlebars/runtime");
 
@@ -152,6 +153,11 @@ module.exports = function(source) {
 
     try {
       if (source) {
+        var sourceToCompile = source;
+        if (debug) {
+          //add source(file) of the template
+          sourceToCompile = '\n<!-- START: ' + resourcePath + '  -->\n' + source + '\n<!-- END: ' + resource + '  -->\n';
+        }
         template = hb.precompile(source, {
           knownHelpersOnly: firstCompile ? false : true,
           knownHelpers: knownHelpers,
