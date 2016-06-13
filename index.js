@@ -156,7 +156,7 @@ module.exports = function(source) {
         var sourceToCompile = source;
         if (debug) {
           //add source(file) of the template
-          sourceToCompile = '\n<!-- START: ' + resourcePath + '  -->\n' + source + '\n<!-- END: ' + resource + '  -->\n';
+          sourceToCompile = '\n<!-- START: ' + resourcePath + '  -->\n' + source + '\n<!-- END: ' + resourcePath + '  -->\n';
         }
         template = hb.precompile(source, {
           knownHelpersOnly: firstCompile ? false : true,
