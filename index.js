@@ -158,7 +158,7 @@ module.exports = function(source) {
           //add source(file) of the template
           sourceToCompile = '\n<!-- START: ' + resourcePath + '  -->\n' + source + '\n<!-- END: ' + resourcePath + '  -->\n';
         }
-        template = hb.precompile(source, {
+        template = hb.precompile(sourceToCompile, {
           knownHelpersOnly: firstCompile ? false : true,
           knownHelpers: knownHelpers,
           preventIndent: query.preventIndent
