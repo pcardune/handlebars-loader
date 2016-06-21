@@ -55,6 +55,7 @@ The following query options are supported:
  - *debug*: Shows trace information to help debug issues (e.g. resolution of helpers).
  - *partialDirs*: Defines additional directories to be searched for partials. Allows partials to be defined in a directory and used globally without relative paths. See [example](https://github.com/altano/handlebars-loader/tree/master/examples/partialDirs)
  - *preventIndent*: Prevent partials from being indented inside their parent template.
+ - *ignorePartials*: Prevents partial references from being fetched and bundled. Useful for manually loading partials at runtime
 
 See [`webpack`](https://github.com/webpack/webpack) documentation for more information regarding loaders.
 
