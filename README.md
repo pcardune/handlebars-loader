@@ -56,6 +56,7 @@ The following query options are supported:
  - *partialDirs*: Defines additional directories to be searched for partials. Allows partials to be defined in a directory and used globally without relative paths. See [example](https://github.com/altano/handlebars-loader/tree/master/examples/partialDirs)
  - *preventIndent*: Prevent partials from being indented inside their parent template.
  - *ignorePartials*: Prevents partial references from being fetched and bundled. Useful for manually loading partials at runtime
+ - *compat*: Enables recursive field lookup for Mustache compatibility. See the Handlebars.js [documentation](https://github.com/wycats/handlebars.js#differences-between-handlebarsjs-and-mustache) for more information.
 
 See [`webpack`](https://github.com/webpack/webpack) documentation for more information regarding loaders.
 

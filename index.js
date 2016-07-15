@@ -155,7 +155,8 @@ module.exports = function(source) {
         template = hb.precompile(source, {
           knownHelpersOnly: firstCompile ? false : true,
           knownHelpers: knownHelpers,
-          preventIndent: query.preventIndent
+          preventIndent: query.preventIndent,
+          compat: query.compat ? true : false
         });
       }
     } catch (err) {
