@@ -7,6 +7,10 @@ A [handlebars](http://handlebarsjs.com) template loader for [webpack](https://gi
 
 *Handlebars 4 now supported*
 
+## Installation
+
+`npm i handlebars-loader --save`
+
 ## General Usage
 
 ### webpack configuration
