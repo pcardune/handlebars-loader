@@ -1,6 +1,12 @@
 # Change Log
 
 ## [Unreleased]
+
+### Added
+- Your feature here!
+
+## [1.4.0] - 2016-09-02
+
 ### Added
 - Fixed resolving relative helpers on first pass when helper directories are given
 - Added `ignorePartials` option to skip automatic lookup/bundling of partials
