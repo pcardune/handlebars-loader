@@ -4,6 +4,7 @@ var fs = require('fs'),
 function WebpackLoaderMock (options) {
   this.context = options.context || '';
   this.query = options.query;
+  this.options = options.options || {};
   this._asyncCallback = options.async;
   this._resolveStubs = options.resolveStubs || {};
 }

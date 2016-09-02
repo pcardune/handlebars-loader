@@ -3,6 +3,7 @@ var handlebars = require("handlebars");
 var async = require("async");
 var util = require("util");
 var path = require("path");
+var assign = require("object-assign");
 var fastreplace = require('./lib/fastreplace');
 var findNestedRequires = require('./lib/findNestedRequires');
 
@@ -10,10 +11,25 @@ function versionCheck(hbCompiler, hbRuntime) {
   return hbCompiler.COMPILER_REVISION === (hbRuntime["default"] || hbRuntime).COMPILER_REVISION;
 }
 
+/**
+ * Check the loader query and webpack config for loader options. If an option is defined in both places,
+ * the loader query takes precedence.
+ *
+ * @param {Loader} loaderContext
+ * @returns {Object}
+ */
+function getLoaderConfig(loaderContext) {
+  var query = loaderContext.query instanceof Object ? loaderContext.query : loaderUtils.parseQuery(loaderContext.query);
+  var configKey = query.config || 'handlebarsLoader';
+  var config = loaderContext.options[configKey] || {};
+  delete query.config;
+  return assign({}, config, query);
+}
+
 module.exports = function(source) {
   if (this.cacheable) this.cacheable();
   var loaderApi = this;
-  var query = this.query instanceof Object ? this.query : loaderUtils.parseQuery(this.query);
+  var query = getLoaderConfig(loaderApi);
   var runtimePath = query.runtime || require.resolve("handlebars/runtime");
 
   if (!versionCheck(handlebars, require(runtimePath))) {
@@ -70,7 +86,7 @@ module.exports = function(source) {
       console.log("nameLookup %s %s %s", parent, name, type);
     }
     if (type === "partial") {
-      if (name[0] == '@') {
+      if (name === '@partial-block') {
         // this is a built in partial, no need to require it
         return JavaScriptCompiler.prototype.nameLookup.apply(this, arguments);
       }
@@ -230,28 +246,45 @@ module.exports = function(source) {
       });
     };
 
-    var resolvePartialsIterator = function(partial, partialCallback) {
-      if (!!query.ignorePartials || foundPartials[partial]) return partialCallback();
-      var request = referenceToRequest(partial.substr(1), 'partial');
-
+    var defaultPartialResolver = function defaultPartialResolver(request, callback){
+      request = referenceToRequest(request, 'partial');
       // Try every extension for partials
       var i = 0;
       (function tryExtension() {
         if (i >= extensions.length) {
-          var errorMsg = util.format("Partial '%s' not found", partial.substr(1));
-          return partialCallback(new Error(errorMsg));
+          var errorMsg = util.format("Partial '%s' not found", request);
+          return callback(new Error(errorMsg));
         }
         var extension = extensions[i++];
 
         resolve(request + extension, 'partial', function(err, result) {
           if (!err && result) {
-            foundPartials[partial] = result;
-            needRecompile = true;
-            return partialCallback();
+            return callback(null, result);
           }
           tryExtension();
         });
       }());
+    };
+
+    var resolvePartialsIterator = function(partial, partialCallback) {
+      if (foundPartials[partial]) return partialCallback();
+      // Strip the # off of the partial name
+      var request = partial.substr(1);
+
+      var partialResolver = query.partialResolver || defaultPartialResolver;
+
+      if(query.ignorePartials) {
+        return partialCallback();
+      } else {
+        partialResolver(request, function(err, resolved){
+          if(err) {
+            return partialCallback(err);
+          }
+          foundPartials[partial] = resolved;
+          needRecompile = true;
+          return partialCallback();
+        });
+      }
     };
 
     var resolveHelpersIterator = function(helper, helperCallback) {

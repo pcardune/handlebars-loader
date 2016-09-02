@@ -48,7 +48,8 @@ A file "/folder/file.handlebars".
 {{../helper}} {{$module/helper}} are resolved similarly to partials.
 ```
 
-The following query options are supported:
+The following query (or config) options are supported:
+
  - *helperDirs*: Defines additional directories to be searched for helpers. Allows helpers to be defined in a directory and used globally without relative paths. You must surround helpers in subdirectories with brackets (Handlerbar helper identifiers can't have forward slashes without this). See [example](https://github.com/altano/handlebars-loader/tree/master/examples/helperDirs)
  - *runtime*: Specify the path to the handlebars runtime library. Defaults to look under the local handlebars npm module, i.e. `handlebars/runtime`.
  - *extensions*: Searches for templates with alternate extensions. Defaults are .handlebars, .hbs, and '' (no extension).
@@ -61,6 +62,16 @@ The following query options are supported:
  - *preventIndent*: Prevent partials from being indented inside their parent template.
  - *ignorePartials*: Prevents partial references from being fetched and bundled. Useful for manually loading partials at runtime
  - *compat*: Enables recursive field lookup for Mustache compatibility. See the Handlebars.js [documentation](https://github.com/wycats/handlebars.js#differences-between-handlebarsjs-and-mustache) for more information.
+ - *config*: Tells the loader where to look in the webpack config for configurations for this loader. Defaults to `handlebarsLoader`.
+ - *config.partialResolver* You can specify a function to use for resolving partials. To do so, add to your webpack config:
+    ```js
+    handlebarsLoader: {
+        partialResolver: function(partial, callback){
+            // should pass the partial's path on disk to
+            // to the callback. Callback accepts (err, locationOnDisk)
+        }
+    }
+    ```
 
 See [`webpack`](https://github.com/webpack/webpack) documentation for more information regarding loaders.
 

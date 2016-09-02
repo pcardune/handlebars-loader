@@ -40,6 +40,7 @@ function testTemplate(loader, template, options, testFn) {
 
   loader.call(new WebpackLoaderMock({
     query: options.query,
+    options: options.options || {},
     resolveStubs: resolveStubs,
     async: function (err, source) {
       if (err) {
@@ -120,6 +121,57 @@ describe('handlebars-loader', function () {
       done();
     });
   });
+
+  var partialResolverOverride = function partialResolverOverride(request, cb){
+    switch(request) {
+    case 'partial':
+      cb(null, 'test');
+      break;
+    case '$partial':
+      cb(null, './test');
+      break;
+    }
+  };
+
+  var testPartialResolver = function testPartialResolver(expectation, options, config){
+    it(expectation, function (done) {
+      testTemplate(loader, './with-partials.handlebars', {
+        stubs: {
+          './test': require('./partial.handlebars'),
+          'test': require('./partial.handlebars')
+        },
+        query: {
+          config: config
+        },
+        options: options,
+        data: TEST_TEMPLATE_DATA
+      }, function (err, output, require) {
+        assert.ok(output, 'generated output');
+        assert.ok(require.calledWith('test'),
+          'should have loaded partial with module syntax');
+        assert.ok(require.calledWith('./test'),
+          'should have loaded partial with relative syntax');
+        done();
+      });
+    });
+  };
+
+  testPartialResolver(
+    'should use the partialResolver if specified', {
+      handlebarsLoader: {
+        partialResolver: partialResolverOverride
+      }
+    }
+  );
+
+  testPartialResolver(
+    'honors the config query option when finding the partialResolver', {
+      handlebarsLoaderOverride: {
+        partialResolver: partialResolverOverride
+      }
+    },
+    'handlebarsLoaderOverride'
+  );
 
   it('allows specifying additional helper search directory', function (done) {
     testTemplate(loader, './with-dir-helpers.handlebars', {
