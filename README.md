@@ -1,3 +1,5 @@
+[![latest version](https://img.shields.io/npm/v/handlebars-loader.svg?maxAge=2592000)](https://www.npmjs.com/package/handlebars-loader)
+[![downloads](https://img.shields.io/npm/dm/handlebars-loader.svg?maxAge=2592000)](https://www.npmjs.com/package/handlebars-loader)
 [![Build Status](https://travis-ci.org/pcardune/handlebars-loader.svg?branch=master)](https://travis-ci.org/pcardune/handlebars-loader)
 [![Coverage Status](https://coveralls.io/repos/github/pcardune/handlebars-loader/badge.svg?branch=master)](https://coveralls.io/github/pcardune/handlebars-loader?branch=master)
 
