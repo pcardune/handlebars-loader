@@ -19,7 +19,7 @@ function versionCheck(hbCompiler, hbRuntime) {
  * @returns {Object}
  */
 function getLoaderConfig(loaderContext) {
-  var query = loaderContext.query instanceof Object ? loaderContext.query : loaderUtils.parseQuery(loaderContext.query);
+  var query = loaderUtils.getOptions(loaderContext) || {};
   var configKey = query.config || 'handlebarsLoader';
   var config = loaderContext.options[configKey] || {};
   delete query.config;
