@@ -21,7 +21,7 @@ A [handlebars](http://handlebarsjs.com) template loader for [webpack](https://gi
 {
   ...
   module: {
-    loaders: [
+    rules: [
       ...
       { test: /\.handlebars$/, loader: "handlebars-loader" }
     ]
