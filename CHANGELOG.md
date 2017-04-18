@@ -3,11 +3,6 @@
 ## [Unreleased]
 
 ### Added
-- Your feature here!
-
-## [1.4.1] - 2017-04-18
-
-### Added
 - Added `helperResolver` config option to override the default helper resolution
 
 ## [1.4.0] - 2016-09-02

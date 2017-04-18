@@ -69,7 +69,7 @@ The following query (or config) options are supported:
     ```js
     handlebarsLoader: {
         partialResolver: function(partial, callback){
-            // should pass the partial's path on disk to
+            // should pass the partial's path on disk
             // to the callback. Callback accepts (err, locationOnDisk)
         }
     }
@@ -78,8 +78,8 @@ The following query (or config) options are supported:
     ```js
     handlebarsLoader: {
         helperResolver: function(helper, callback){
-            // should pass the helper's path on disk to
-            // to the callback if one was find for the given parameter.
+            // should pass the helper's path on disk
+            // to the callback if one was found for the given parameter.
             // Callback accepts (err, locationOnDisk)
             // Otherwise just call the callback without any arguments
         }
