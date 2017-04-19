@@ -69,12 +69,22 @@ The following query (or config) options are supported:
     ```js
     handlebarsLoader: {
         partialResolver: function(partial, callback){
-            // should pass the partial's path on disk to
+            // should pass the partial's path on disk
             // to the callback. Callback accepts (err, locationOnDisk)
         }
     }
     ```
-
+- *config.helperResolver* You can specify a function to use for resolving helpers. To do so, add to your webpack config:
+    ```js
+    handlebarsLoader: {
+        helperResolver: function(helper, callback){
+            // should pass the helper's path on disk
+            // to the callback if one was found for the given parameter.
+            // Callback accepts (err, locationOnDisk)
+            // Otherwise just call the callback without any arguments
+        }
+    }
+    ```
 See [`webpack`](https://github.com/webpack/webpack) documentation for more information regarding loaders.
 
 ## Full examples

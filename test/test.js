@@ -173,6 +173,51 @@ describe('handlebars-loader', function () {
     'handlebarsLoaderOverride'
   );
 
+  var helperResolverOverride = function helperResolverOverride(request, cb){
+    switch(request) {
+    case './image':
+      cb(null, './helpers/image.js');
+      break;
+    case './json':
+      cb(null, './helpers2/json.js');
+      break;
+    default:
+      cb();
+    }
+  };
+
+  var testHelperResolver = function testHelperResolver(expectation, options, config){
+    it(expectation, function (done) {
+      testTemplate(loader, './with-dir-helpers-multiple.handlebars', {
+        query: {
+          config: config
+        },
+        options: options,
+        data: TEST_TEMPLATE_DATA
+      }, function (err, output, require) {
+        assert.ok(output, 'generated output');
+        done();
+      });
+    });
+  };
+
+  testHelperResolver(
+    'should use the helperResolver if specified', {
+      handlebarsLoader: {
+        helperResolver: helperResolverOverride
+      }
+    }
+  );
+
+  testHelperResolver(
+    'honors the config query option when finding the helperResolver', {
+      handlebarsLoaderOverride: {
+        helperResolver: helperResolverOverride
+      }
+    },
+    'handlebarsLoaderOverride'
+  );
+
   it('allows specifying additional helper search directory', function (done) {
     testTemplate(loader, './with-dir-helpers.handlebars', {
       query: '?helperDirs[]=' + path.join(__dirname, 'helpers'),

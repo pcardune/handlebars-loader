@@ -291,7 +291,13 @@ module.exports = function(source) {
       if (foundHelpers[helper]) return helperCallback();
       var request = referenceToRequest(helper.substr(1), 'helper');
 
-      resolve(request, 'helper', function(err, result) {
+      var defaultHelperResolver = function(request, callback){
+        return resolve(request, 'helper', callback);
+      };
+
+      var helperResolver = query.helperResolver || defaultHelperResolver;
+
+      helperResolver(request, function(err, result) {
         if (!err && result) {
           knownHelpers[helper.substr(1)] = true;
           foundHelpers[helper] = result;
