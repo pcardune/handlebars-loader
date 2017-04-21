@@ -1,5 +1,10 @@
 # Change Log
 
+## [Unreleased]
+
+### Added
+- [Your feature here!]
+
 ## [1.5.0] - 2017-04-20
 
 ### Added
