@@ -1,9 +1,12 @@
 # Change Log
 
-## [Unreleased]
+## [1.5.0] - 2017-04-20
 
 ### Added
 - Added `helperResolver` config option to override the default helper resolution
+
+### Fixed
+- Fixed webpack deprecation warnings
 
 ## [1.4.0] - 2016-09-02
 
