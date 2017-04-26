@@ -235,15 +235,20 @@ module.exports = function(source) {
     var resolveUnclearStuffIterator = function(stuff, unclearStuffCallback) {
       if (foundUnclearStuff[stuff]) return unclearStuffCallback();
       var request = referenceToRequest(stuff.substr(1), 'unclearStuff');
-      resolve(request, 'unclearStuff', function(err, result) {
-        if (!err && result) {
-          knownHelpers[stuff.substr(1)] = true;
-          foundHelpers[stuff] = result;
-          needRecompile = true;
-        }
-        foundUnclearStuff[stuff] = true;
+
+      if (query.ignoreHelpers) {
         unclearStuffCallback();
-      });
+      } else {
+        resolve(request, 'unclearStuff', function(err, result) {
+          if (!err && result) {
+            knownHelpers[stuff.substr(1)] = true;
+            foundHelpers[stuff] = result;
+            needRecompile = true;
+          }
+          foundUnclearStuff[stuff] = true;
+          unclearStuffCallback();
+        });
+      }
     };
 
     var defaultPartialResolver = function defaultPartialResolver(request, callback){
@@ -291,25 +296,29 @@ module.exports = function(source) {
       if (foundHelpers[helper]) return helperCallback();
       var request = referenceToRequest(helper.substr(1), 'helper');
 
-      var defaultHelperResolver = function(request, callback){
-        return resolve(request, 'helper', callback);
-      };
-
-      var helperResolver = query.helperResolver || defaultHelperResolver;
-
-      helperResolver(request, function(err, result) {
-        if (!err && result) {
-          knownHelpers[helper.substr(1)] = true;
-          foundHelpers[helper] = result;
-          needRecompile = true;
-          return helperCallback();
-        }
-
-        // We don't return an error: we just fail to resolve the helper.
-        // This is b/c Handlebars calls nameLookup with type=helper for non-helper
-        // template options, e.g. something that comes from the template data.
+      if (query.ignoreHelpers) {
         helperCallback();
-      });
+      } else {
+        var defaultHelperResolver = function(request, callback){
+          return resolve(request, 'helper', callback);
+        };
+
+        var helperResolver = query.helperResolver || defaultHelperResolver;
+
+        helperResolver(request, function(err, result) {
+          if (!err && result) {
+            knownHelpers[helper.substr(1)] = true;
+            foundHelpers[helper] = result;
+            needRecompile = true;
+            return helperCallback();
+          }
+
+          // We don't return an error: we just fail to resolve the helper.
+          // This is b/c Handlebars calls nameLookup with type=helper for non-helper
+          // template options, e.g. something that comes from the template data.
+          helperCallback();
+        });
+      }
     };
 
     var doneResolving = function(err) {
