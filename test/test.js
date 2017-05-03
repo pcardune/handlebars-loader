@@ -520,4 +520,26 @@ describe('handlebars-loader', function () {
     });
   });
 
+  it('allows helpers to be ignored until runtime', function (done) {
+    var runtimePath = require.resolve('handlebars/runtime');
+    var stubs = {};
+
+    // Need to set up a stubbed handlebars runtime that has our known helper loaded in
+    var Handlebars = require('handlebars/runtime').default.create();
+    stubs[runtimePath] = Handlebars;
+    Handlebars.registerHelper('someKnownHelper', function () {
+      return 'some known helper';
+    });
+
+    testTemplate(loader, './with-known-helpers.handlebars', {
+      query: '?ignoreHelpers',
+      stubs: stubs
+    }, function (err, output, require) {
+      assert.ok(output, 'generated output');
+      assert.ok(output.indexOf('some known helper') >= 0);
+      assert.ok(!require.calledWith('./someKnownHelper'), 'should not have tried to dynamically require helper');
+      done();
+    });
+  });
+
 });

@@ -3,7 +3,7 @@
 ## [Unreleased]
 
 ### Added
-- [Your feature here!]
+- Added `ignoreHelpers` option to skip automatic lookup/bundling of helpers
 
 ## [1.5.0] - 2017-04-20
 
