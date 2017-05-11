@@ -169,7 +169,7 @@ module.exports = function(source) {
     try {
       if (source) {
         template = hb.precompile(source, {
-          knownHelpersOnly: firstCompile ? false : true,
+          knownHelpersOnly: query.ignoreHelpers ? false : (firstCompile ? false : true),
           knownHelpers: knownHelpers,
           preventIndent: query.preventIndent,
           compat: query.compat ? true : false
