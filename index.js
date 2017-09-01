@@ -36,6 +36,8 @@ module.exports = function(source) {
     throw new Error('Handlebars compiler version does not match runtime version');
   }
 
+  var precompileOptions = query.precompileOptions || {};
+
   // Possible extensions for partials
   var extensions = query.extensions;
   if (!extensions) {
@@ -55,12 +57,11 @@ module.exports = function(source) {
   var foundUnclearStuff = {};
   var knownHelpers = {};
 
-  var queryKnownHelpers = query.knownHelpers;
-  if (queryKnownHelpers) {
-    [].concat(queryKnownHelpers).forEach(function(k) {
+  [].concat(query.knownHelpers, precompileOptions.knownHelpers).forEach(function(k) {
+    if (k && typeof k === 'string') {
       knownHelpers[k] = true;
-    });
-  }
+    }
+  });
 
   var inlineRequires = query.inlineRequires;
   if (inlineRequires) {
@@ -168,12 +169,14 @@ module.exports = function(source) {
 
     try {
       if (source) {
-        template = hb.precompile(source, {
-          knownHelpersOnly: firstCompile ? false : true,
+        template = hb.precompile(source, assign({
+          knownHelpersOnly: !firstCompile,
+          // TODO: Remove these in next major release
+          preventIndent: !!query.preventIndent,
+          compat: !!query.compat
+        }, precompileOptions, {
           knownHelpers: knownHelpers,
-          preventIndent: query.preventIndent,
-          compat: query.compat ? true : false
-        });
+        }));
       }
     } catch (err) {
       return loaderAsyncCallback(err);
