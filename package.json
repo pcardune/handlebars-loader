@@ -28,7 +28,7 @@
     "type": "git",
     "url": "git://github.com/pcardune/handlebars-loader.git"
   },
-  "version": "1.5.0",
+  "version": "1.6.0",
   "devDependencies": {
     "coveralls": "^2.11.8",
     "eslint": "^2.8.0",
