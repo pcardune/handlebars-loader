@@ -3,9 +3,13 @@
 ## [Unreleased]
 
 ### Added
+- Your feature here!
+
+## [1.6.0] - 2017-09-01 ##
+
+### Added
 - Added `ignoreHelpers` option to skip automatic lookup/bundling of helpers
 - Added `precompileOptions` to pass options to handlebars precompile
-- Your feature here!
 
 ## [1.5.0] - 2017-04-20
 
