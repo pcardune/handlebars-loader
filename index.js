@@ -26,23 +26,6 @@ function getLoaderConfig(loaderContext) {
   return assign({}, config, query);
 }
 
-/**
- * Custom error constructor.
- *
- * @param {String} message
- * @param {Object} data
- * */
-function CustomError(message, data) {
-  this.name = 'CustomError';
-  this.message = message;
-  this.stack = (new Error()).stack;
-  this.data = data;
-  if (Error.captureStackTrace) {
-    Error.captureStackTrace(this, CustomError);
-  }
-}
-CustomError.prototype = new Error();
-
 module.exports = function(source) {
   if (this.cacheable) this.cacheable();
   var loaderApi = this;
@@ -305,7 +288,7 @@ module.exports = function(source) {
       (function tryExtension() {
         if (i >= extensions.length) {
           var errorMsg = util.format("Partial '%s' not found", request);
-          return callback(new CustomError(errorMsg, {request: request}));
+          return callback(new Error(errorMsg));
         }
         var extension = extensions[i++];
 
@@ -331,13 +314,12 @@ module.exports = function(source) {
         partialResolver(request, function(err, resolved){
           if(err) {
             var visitor = new InternalBlocksVisitor();
-            var errPartialName = err.data.request.substring(err.data.request.lastIndexOf('/') + 1);
 
             visitor.accept(ast);
 
             if (
-              visitor.inlineBlocks.indexOf(errPartialName !== -1) ||
-              visitor.partialBlocks.indexOf(errPartialName !== -1)
+              visitor.inlineBlocks.indexOf(request !== -1) ||
+              visitor.partialBlocks.indexOf(request !== -1)
             ) {
               return partialCallback();
             } else {
