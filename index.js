@@ -318,8 +318,8 @@ module.exports = function(source) {
             visitor.accept(ast);
 
             if (
-              visitor.inlineBlocks.indexOf(request !== -1) ||
-              visitor.partialBlocks.indexOf(request !== -1)
+              visitor.inlineBlocks.indexOf(request) !== -1 ||
+              visitor.partialBlocks.indexOf(request) !== -1
             ) {
               return partialCallback();
             } else {
