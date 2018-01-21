@@ -542,4 +542,18 @@ describe('handlebars-loader', function () {
     });
   });
 
+  it('should use failover content of the partial block if it refers to non-existent partial', function (done) {
+    testTemplate(loader, './with-partial-block.handlebars', {}, function (err, output, require) {
+      assert.ok(output, 'generated output');
+      done();
+    });
+  });
+
+  it('should recognize and render inline partials', function (done) {
+    testTemplate(loader, './with-inline-partial.handlebars', {}, function (err, output, require) {
+      assert.ok(output, 'generated output');
+      done();
+    });
+  });
+
 });

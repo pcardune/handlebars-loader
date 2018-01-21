@@ -2,8 +2,8 @@
 
 ## [Unreleased]
 
-### Added
-- Your feature here!
+### Fixed
+- Fixed resolving of inline partials and partial blocks with failover content (#106, #135)
 
 ## [1.6.0] - 2017-09-01 ##
 
