@@ -1,19 +1,8 @@
 {
   "name": "@viadeo-fcms/handlebars-loader",
-  "contributors": [
-    "Alan @altano",
-    "Tobias Koppers @sokra",
-    "Jason Anderson @diurnalist"
-  ],
+  "version": "2.2.1",
   "description": "handlebars loader module for webpack",
-  "dependencies": {
-    "async": "0.2.10",
-    "fastparse": "1.0.0",
-    "loader-utils": "0.2.x"
-  },
-  "peerDependencies": {
-    "handlebars": ">= 1.3.0 < 5"
-  },
+  "homepage": "https://github.com/altano/handlebars-loader",
   "licenses": [
     {
       "type": "MIT",
@@ -24,17 +13,24 @@
     "type": "git",
     "url": "git://github.com/altano/handlebars-loader.git"
   },
-  "version": "2.2.0",
+  "main": "index.js",
+  "dependencies": {
+    "async": "0.2.10",
+    "fastparse": "1.0.0",
+    "loader-utils": "0.2.x"
+  },
+  "peerDependencies": {
+    "handlebars": ">= 1.3.0 < 5"
+  },
   "devDependencies": {
     "html-loader": "0.3.0",
+    "nyc": "11.4.1",
     "mocha": "1.21.4",
     "sinon": "1.10.3"
   },
   "bugs": {
     "url": "https://github.com/altano/handlebars-loader/issues"
   },
-  "homepage": "https://github.com/altano/handlebars-loader",
-  "main": "index.js",
   "files": [
     "index.js",
     "lib"
@@ -44,8 +40,12 @@
     "test": "test"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --timeout 1100 --reporter spec 'test/test.js'",
+    "coverage": "nyc --report-dir coverage --clean -r lcov -r text -r json-summary -r json -r html mocha --timeout=1100 --reporter=spec"
   },
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "engines": {
+    "node": "8.9.4"
+  }
 }

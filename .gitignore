@@ -5,3 +5,6 @@ example/dist/
 .ntvs_analysis.dat
 obj/
 .ntvs_analysis.dat.tmp
+package-lock.json
+.nyc_output/
+coverage/

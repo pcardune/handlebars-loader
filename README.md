@@ -4,6 +4,8 @@
 
 A [`handlebars`](http://handlebarsjs.com) template loader for [`webpack`](https://github.com/webpack/webpack).
 
+Forked from pcardune/handlebars-loader.
+
 *Handlebars 4 now supported*
 
 **This fork is made by the Viadeo Team to adapt the Handlebars loader to our historic build conventions. No PR to original repository because we felt these changes were too specific.**
