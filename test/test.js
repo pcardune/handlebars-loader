@@ -40,7 +40,7 @@ function testTemplate(loader, template, options, testFn) {
 
   loader.call(new WebpackLoaderMock({
     query: options.query,
-    options: options.options || {},
+    rootContext: options.rootContext || {},
     resolveStubs: resolveStubs,
     async: function (err, source) {
       if (err) {
@@ -143,7 +143,7 @@ describe('handlebars-loader', function () {
         query: {
           config: config
         },
-        options: options,
+        rootContext: options,
         data: TEST_TEMPLATE_DATA
       }, function (err, output, require) {
         assert.ok(output, 'generated output');
@@ -192,7 +192,7 @@ describe('handlebars-loader', function () {
         query: {
           config: config
         },
-        options: options,
+        rootContext: options,
         data: TEST_TEMPLATE_DATA
       }, function (err, output, require) {
         assert.ok(output, 'generated output');

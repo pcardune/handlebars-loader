@@ -21,7 +21,7 @@ function versionCheck(hbCompiler, hbRuntime) {
 function getLoaderConfig(loaderContext) {
   var query = loaderUtils.getOptions(loaderContext) || {};
   var configKey = query.config || 'handlebarsLoader';
-  var config = loaderContext.options[configKey] || {};
+  var config = loaderContext.rootContext[configKey] || {};
   delete query.config;
   return assign({}, config, query);
 }
