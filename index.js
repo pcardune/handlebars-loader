@@ -269,7 +269,13 @@ module.exports = function(source) {
       if (query.ignoreHelpers) {
         unclearStuffCallback();
       } else {
-        resolve(request, 'unclearStuff', function(err, result) {
+        var defaultHelperResolver = function(request, callback){
+          return resolve(request, 'unclearStuff', callback);
+        };
+
+        var helperResolver = query.helperResolver || defaultHelperResolver;
+
+        helperResolver(request, function(err, result) {
           if (!err && result) {
             knownHelpers[stuff.substr(1)] = true;
             foundHelpers[stuff] = result;
