@@ -1,6 +1,6 @@
 # Change Log
 
-## [Unreleased]
+## [1.7.0] - 2018-03-20
 
 ### Fixed
 - Replaced `loaderContext.options` with `loaderContext.rootContext` to work with upcoming Webpack 4
