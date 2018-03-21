@@ -8,7 +8,7 @@
 ## [1.7.0] - 2018-03-20
 
 ### Fixed
-- Replaced `loaderContext.options` with `loaderContext.rootContext` to work with upcoming Webpack 4
+- Use `loaderContext.rootContext` instead of `loaderContext.options` when used with Webpack 4
 - Fixed resolving of inline partials and partial blocks with failover content (#106, #135)
 
 ## [1.6.0] - 2017-09-01 ##
