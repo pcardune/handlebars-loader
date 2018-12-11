@@ -92,14 +92,14 @@ module.exports = function(source) {
         return JavaScriptCompiler.prototype.nameLookup.apply(this, arguments);
       }
       if (foundPartials["$" + name]) {
-        return "require(" + JSON.stringify(foundPartials["$" + name]) + ")";
+        return "require(" + loaderUtils.stringifyRequest(loaderApi, foundPartials["$" + name]) + ")";
       }
       foundPartials["$" + name] = null;
       return JavaScriptCompiler.prototype.nameLookup.apply(this, arguments);
     }
     else if (type === "helper") {
       if (foundHelpers["$" + name]) {
-        return "__default(require(" + JSON.stringify(foundHelpers["$" + name]) + "))";
+        return "__default(require(" + loaderUtils.stringifyRequest(loaderApi, foundHelpers["$" + name]) + "))";
       }
       foundHelpers["$" + name] = null;
       return JavaScriptCompiler.prototype.nameLookup.apply(this, arguments);
@@ -117,7 +117,7 @@ module.exports = function(source) {
   if (inlineRequires) {
     MyJavaScriptCompiler.prototype.pushString = function(value) {
       if (inlineRequires.test(value)) {
-        this.pushLiteral("require(" + JSON.stringify(value) + ")");
+        this.pushLiteral("require(" + loaderUtils.stringifyRequest(loaderApi, value) + ")");
       } else {
         JavaScriptCompiler.prototype.pushString.call(this, value);
       }
@@ -127,7 +127,7 @@ module.exports = function(source) {
       if (str.indexOf && str.indexOf('"') === 0) {
         var replacements = findNestedRequires(str, inlineRequires);
         str = fastreplace(str, replacements, function (match) {
-          return "\" + require(" + JSON.stringify(match) + ") + \"";
+          return "\" + require(" + loaderUtils.stringifyRequest(loaderApi, match) + ") + \"";
         });
       }
       return JavaScriptCompiler.prototype.appendToBuffer.apply(this, arguments);
@@ -374,7 +374,7 @@ module.exports = function(source) {
 
       // export as module if template is not blank
       var slug = template ?
-        'var Handlebars = require(' + JSON.stringify(runtimePath) + ');\n'
+        'var Handlebars = require(' + loaderUtils.stringifyRequest(loaderApi, runtimePath) + ');\n'
         + 'function __default(obj) { return obj && (obj.__esModule ? obj["default"] : obj); }\n'
         + 'module.exports = (Handlebars["default"] || Handlebars).template(' + template + ');' :
         'module.exports = function(){return "";};';
