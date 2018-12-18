@@ -1,9 +1,9 @@
 # Change Log
 
-## [Unreleased]
+## [1.7.1] - 2018-12-18
 
 ### Fixed
-- Your improvement here...
+- Fixed use stringifyRequest instead of absolute paths in loader output (#167)
 
 ## [1.7.0] - 2018-03-20
 
