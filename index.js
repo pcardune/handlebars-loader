@@ -6,6 +6,7 @@ var path = require("path");
 var assign = require("object-assign");
 var fastreplace = require('./lib/fastreplace');
 var findNestedRequires = require('./lib/findNestedRequires');
+var minify = require('html-minifier').minify;
 
 function versionCheck(hbCompiler, hbRuntime) {
   return hbCompiler.COMPILER_REVISION === (hbRuntime["default"] || hbRuntime).COMPILER_REVISION;
@@ -26,7 +27,23 @@ function getLoaderConfig(loaderContext) {
   return assign({}, config, query);
 }
 
-module.exports = function(source) {
+/**
+ * Returns the template source with newlines and multiple spaces removed
+ * based on the processSource config option.
+ *
+ * @param {String} source
+ * @returns {String}
+ */
+var processSource = function (source) {
+  return minify(source, {
+    collapseWhitespace: true,
+    conservativeCollapse: true,
+    removeComments: true,
+    removeAttributeQuotes: true
+  });
+};
+
+module.exports = function (source) {
   if (this.cacheable) this.cacheable();
   var loaderApi = this;
   var query = getLoaderConfig(loaderApi);
@@ -42,8 +59,7 @@ module.exports = function(source) {
   var extensions = query.extensions;
   if (!extensions) {
     extensions = [".handlebars", ".hbs", ""];
-  }
-  else if (!Array.isArray(extensions)) {
+  } else if (!Array.isArray(extensions)) {
     extensions = extensions.split(/[ ,;]/g);
   }
 
@@ -57,7 +73,7 @@ module.exports = function(source) {
   var foundUnclearStuff = {};
   var knownHelpers = {};
 
-  [].concat(query.knownHelpers, precompileOptions.knownHelpers).forEach(function(k) {
+  [].concat(query.knownHelpers, precompileOptions.knownHelpers).forEach(function (k) {
     if (k && typeof k === 'string') {
       knownHelpers[k] = true;
     }
@@ -77,12 +93,13 @@ module.exports = function(source) {
 
   var hb = handlebars.create();
   var JavaScriptCompiler = hb.JavaScriptCompiler;
+
   function MyJavaScriptCompiler() {
     JavaScriptCompiler.apply(this, arguments);
   }
   MyJavaScriptCompiler.prototype = Object.create(JavaScriptCompiler.prototype);
   MyJavaScriptCompiler.prototype.compiler = MyJavaScriptCompiler;
-  MyJavaScriptCompiler.prototype.nameLookup = function(parent, name, type) {
+  MyJavaScriptCompiler.prototype.nameLookup = function (parent, name, type) {
     if (debug) {
       console.log("nameLookup %s %s %s", parent, name, type);
     }
@@ -96,26 +113,23 @@ module.exports = function(source) {
       }
       foundPartials["$" + name] = null;
       return JavaScriptCompiler.prototype.nameLookup.apply(this, arguments);
-    }
-    else if (type === "helper") {
+    } else if (type === "helper") {
       if (foundHelpers["$" + name]) {
         return "__default(require(" + loaderUtils.stringifyRequest(loaderApi, foundHelpers["$" + name]) + "))";
       }
       foundHelpers["$" + name] = null;
       return JavaScriptCompiler.prototype.nameLookup.apply(this, arguments);
-    }
-    else if (type === "context") {
+    } else if (type === "context") {
       // This could be a helper too, save it to check it later
       if (!foundUnclearStuff["$" + name]) foundUnclearStuff["$" + name] = false;
       return JavaScriptCompiler.prototype.nameLookup.apply(this, arguments);
-    }
-    else {
+    } else {
       return JavaScriptCompiler.prototype.nameLookup.apply(this, arguments);
     }
   };
 
   if (inlineRequires) {
-    MyJavaScriptCompiler.prototype.pushString = function(value) {
+    MyJavaScriptCompiler.prototype.pushString = function (value) {
       if (inlineRequires.test(value)) {
         this.pushLiteral("require(" + loaderUtils.stringifyRequest(loaderApi, value) + ")");
       } else {
@@ -138,17 +152,18 @@ module.exports = function(source) {
 
   // Define custom visitor for further template AST parsing
   var Visitor = handlebars.Visitor;
+
   function InternalBlocksVisitor() {
     this.partialBlocks = [];
     this.inlineBlocks = [];
   }
 
   InternalBlocksVisitor.prototype = new Visitor();
-  InternalBlocksVisitor.prototype.PartialBlockStatement = function(partial) {
+  InternalBlocksVisitor.prototype.PartialBlockStatement = function (partial) {
     this.partialBlocks.push(partial.name.original);
     Visitor.prototype.PartialBlockStatement.call(this, partial);
   };
-  InternalBlocksVisitor.prototype.DecoratorBlock = function(partial) {
+  InternalBlocksVisitor.prototype.DecoratorBlock = function (partial) {
     if (partial.path.original === 'inline') {
       this.inlineBlocks.push(partial.params[0].value);
     }
@@ -202,6 +217,9 @@ module.exports = function(source) {
 
     try {
       if (source) {
+        if (query.processSource) {
+          source = processSource(source);
+        }
         ast = hb.parse(source, opts);
         template = hb.precompile(ast, opts);
       }
@@ -209,7 +227,7 @@ module.exports = function(source) {
       return loaderAsyncCallback(err);
     }
 
-    var resolve = function(request, type, callback) {
+    var resolve = function (request, type, callback) {
       var contexts = [loaderApi.context];
 
       // Any additional helper dirs will be added to the searchable contexts
@@ -222,7 +240,7 @@ module.exports = function(source) {
         contexts = contexts.concat(query.partialDirs);
       }
 
-      var resolveWithContexts = function() {
+      var resolveWithContexts = function () {
         var context = contexts.shift();
 
         var traceMsg;
@@ -232,28 +250,25 @@ module.exports = function(source) {
           console.log("request=%s", request);
         }
 
-        var next = function(err) {
+        var next = function (err) {
           if (contexts.length > 0) {
             resolveWithContexts();
-          }
-          else {
+          } else {
             if (debug) console.log("Failed to resolve %s %s", type, traceMsg);
             return callback(err);
           }
         };
 
-        loaderApi.resolve(context, request, function(err, result) {
+        loaderApi.resolve(context, request, function (err, result) {
           if (!err && result) {
             if (exclude && exclude.test(result)) {
               if (debug) console.log("Excluding %s %s", type, traceMsg);
               return next();
-            }
-            else {
+            } else {
               if (debug) console.log("Resolved %s %s", type, traceMsg);
               return callback(err, result);
             }
-          }
-          else {
+          } else {
             return next(err);
           }
         });
@@ -262,14 +277,14 @@ module.exports = function(source) {
       resolveWithContexts();
     };
 
-    var resolveUnclearStuffIterator = function(stuff, unclearStuffCallback) {
+    var resolveUnclearStuffIterator = function (stuff, unclearStuffCallback) {
       if (foundUnclearStuff[stuff]) return unclearStuffCallback();
       var request = referenceToRequest(stuff.substr(1), 'unclearStuff');
 
       if (query.ignoreHelpers) {
         unclearStuffCallback();
       } else {
-        resolve(request, 'unclearStuff', function(err, result) {
+        resolve(request, 'unclearStuff', function (err, result) {
           if (!err && result) {
             knownHelpers[stuff.substr(1)] = true;
             foundHelpers[stuff] = result;
@@ -281,7 +296,7 @@ module.exports = function(source) {
       }
     };
 
-    var defaultPartialResolver = function defaultPartialResolver(request, callback){
+    var defaultPartialResolver = function defaultPartialResolver(request, callback) {
       request = referenceToRequest(request, 'partial');
       // Try every extension for partials
       var i = 0;
@@ -292,7 +307,7 @@ module.exports = function(source) {
         }
         var extension = extensions[i++];
 
-        resolve(request + extension, 'partial', function(err, result) {
+        resolve(request + extension, 'partial', function (err, result) {
           if (!err && result) {
             return callback(null, result);
           }
@@ -301,18 +316,18 @@ module.exports = function(source) {
       }());
     };
 
-    var resolvePartialsIterator = function(partial, partialCallback) {
+    var resolvePartialsIterator = function (partial, partialCallback) {
       if (foundPartials[partial]) return partialCallback();
       // Strip the # off of the partial name
       var request = partial.substr(1);
 
       var partialResolver = query.partialResolver || defaultPartialResolver;
 
-      if(query.ignorePartials) {
+      if (query.ignorePartials) {
         return partialCallback();
       } else {
-        partialResolver(request, function(err, resolved){
-          if(err) {
+        partialResolver(request, function (err, resolved) {
+          if (err) {
             var visitor = new InternalBlocksVisitor();
 
             visitor.accept(ast);
@@ -334,20 +349,20 @@ module.exports = function(source) {
       }
     };
 
-    var resolveHelpersIterator = function(helper, helperCallback) {
+    var resolveHelpersIterator = function (helper, helperCallback) {
       if (foundHelpers[helper]) return helperCallback();
       var request = referenceToRequest(helper.substr(1), 'helper');
 
       if (query.ignoreHelpers) {
         helperCallback();
       } else {
-        var defaultHelperResolver = function(request, callback){
+        var defaultHelperResolver = function (request, callback) {
           return resolve(request, 'helper', callback);
         };
 
         var helperResolver = query.helperResolver || defaultHelperResolver;
 
-        helperResolver(request, function(err, result) {
+        helperResolver(request, function (err, result) {
           if (!err && result) {
             knownHelpers[helper.substr(1)] = true;
             foundHelpers[helper] = result;
@@ -363,7 +378,7 @@ module.exports = function(source) {
       }
     };
 
-    var doneResolving = function(err) {
+    var doneResolving = function (err) {
       if (err) return loaderAsyncCallback(err);
 
       // Do another compiler pass if not everything was resolved
@@ -374,15 +389,15 @@ module.exports = function(source) {
 
       // export as module if template is not blank
       var slug = template ?
-        'var Handlebars = require(' + loaderUtils.stringifyRequest(loaderApi, runtimePath) + ');\n'
-        + 'function __default(obj) { return obj && (obj.__esModule ? obj["default"] : obj); }\n'
-        + 'module.exports = (Handlebars["default"] || Handlebars).template(' + template + ');' :
+        'var Handlebars = require(' + loaderUtils.stringifyRequest(loaderApi, runtimePath) + ');\n' +
+        'function __default(obj) { return obj && (obj.__esModule ? obj["default"] : obj); }\n' +
+        'module.exports = (Handlebars["default"] || Handlebars).template(' + template + ');' :
         'module.exports = function(){return "";};';
 
       loaderAsyncCallback(null, slug);
     };
 
-    var resolveItems = function(err, type, items, iterator, callback) {
+    var resolveItems = function (err, type, items, iterator, callback) {
       if (err) return callback(err);
 
       var itemKeys = Object.keys(items);
@@ -395,15 +410,15 @@ module.exports = function(source) {
       async.each(itemKeys, iterator, callback);
     };
 
-    var resolvePartials = function(err) {
+    var resolvePartials = function (err) {
       resolveItems(err, 'partials', foundPartials, resolvePartialsIterator, doneResolving);
     };
 
-    var resolveUnclearStuff = function(err) {
+    var resolveUnclearStuff = function (err) {
       resolveItems(err, 'unclearStuff', foundUnclearStuff, resolveUnclearStuffIterator, resolvePartials);
     };
 
-    var resolveHelpers = function(err) {
+    var resolveHelpers = function (err) {
       resolveItems(err, 'helpers', foundHelpers, resolveHelpersIterator, resolveUnclearStuff);
     };
 

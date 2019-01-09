@@ -3,7 +3,8 @@
   "contributors": [
     "Alan @altano",
     "Tobias Koppers @sokra",
-    "Jason Anderson @diurnalist"
+    "Jason Anderson @diurnalist",
+    "Patrick Szczypinski @pizatski"
   ],
   "maintainers": [
     "Paul Carduner @pcardune"
@@ -12,6 +13,7 @@
   "dependencies": {
     "async": "~0.2.10",
     "fastparse": "^1.0.0",
+    "html-minifier": "^3.5.21",
     "loader-utils": "1.0.x",
     "object-assign": "^4.1.0"
   },
@@ -28,7 +30,7 @@
     "type": "git",
     "url": "git://github.com/pcardune/handlebars-loader.git"
   },
-  "version": "1.7.1",
+  "version": "1.7.2",
   "devDependencies": {
     "coveralls": "^2.11.8",
     "eslint": "^2.8.0",

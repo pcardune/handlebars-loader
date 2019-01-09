@@ -1,5 +1,6 @@
 *.sublime-project
 *.sublime-workspace
+*.code-workspace
 node_modules
 example/dist/
 .ntvs_analysis.dat

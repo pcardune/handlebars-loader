@@ -556,4 +556,20 @@ describe('handlebars-loader', function () {
     });
   });
 
+/*
+ * This uses an html-minifier with 'conservative whitespace stripping' on. This means you'll still get a single space around each
+ * var in the handlebars template which can result in two spaces between tags.
+ */
+  it('should output with fewer than three spaces and no newlines when processSource option is set', function (done) {
+    testTemplate(loader, './simple.handlebars', {
+      query: '?processSource=true',
+      data: TEST_TEMPLATE_DATA
+    }, function (err, output, require) {
+      assert.ok(output, 'generated output');
+      assert.ok(output.indexOf('\n') === -1);
+      assert.ok(output.indexOf('   ') === -1);
+      done();
+    });
+  });
+
 });

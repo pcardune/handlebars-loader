@@ -64,6 +64,7 @@ The following query (or config) options are supported:
  - *ignorePartials*: Prevents partial references from being fetched and bundled. Useful for manually loading partials at runtime.
  - *ignoreHelpers*: Prevents helper references from being fetched and bundled. Useful for manually loading helpers at runtime.
  - *precompileOptions*: Options passed to handlebars precompile. See the Handlebars.js [documentation](http://handlebarsjs.com/reference.html#base-precompile) for more information.
+ - *processSource*: Runs the handlebars templates through an html minifier to remove whitespace and reduce the size of the compiled templates.
  - *config*: Tells the loader where to look in the webpack config for configurations for this loader. Defaults to `handlebarsLoader`.
  - *config.partialResolver* You can specify a function to use for resolving partials. To do so, add to your webpack config:
     ```js

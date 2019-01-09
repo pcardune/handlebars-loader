@@ -5,6 +5,11 @@
 ### Fixed
 - Your improvement here...
 
+## [1.7.2] - 2019-01-09
+
+### Fixed
+- Added `processSource` option to run handlebars template through html minifier for production optimizations (#175)
+
 ## [1.7.1] - 2018-12-18
 
 ### Fixed
