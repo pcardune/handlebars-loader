@@ -127,6 +127,27 @@ module.exports = function(source) {
       if (str.indexOf && str.indexOf('"') === 0) {
         var replacements = findNestedRequires(str, inlineRequires);
         str = fastreplace(str, replacements, function (match) {
+
+          if (match.indexOf(',') > -1) {
+            // Handle srcset
+            const srcset = match.split(',');
+
+            let srcsetParts = [];
+
+            srcset.forEach(src => {
+              const fileSrcParts = src.trim().split(' ');
+              const fileSrc = fileSrcParts[0];
+              const fileStuffix = fileSrcParts[1]
+                                    ? ` ${fileSrcParts[1]}`
+                                    : '';
+              srcsetParts.push(`" + require('${loaderUtils.stringifyRequest(loaderApi, fileSrc)}') + "${fileStuffix}`);
+            });
+
+            const returnString = srcsetParts.join(',');
+
+            return returnString;
+          }
+
           return "\" + require(" + loaderUtils.stringifyRequest(loaderApi, match) + ") + \"";
         });
       }
