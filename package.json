@@ -31,7 +31,7 @@
   "version": "1.7.1",
   "devDependencies": {
     "coveralls": "^2.11.8",
-    "eslint": "^2.8.0",
+    "eslint": "^6.5.1",
     "html-loader": "^0.3.0",
     "istanbul": "^0.4.2",
     "mocha": "^1.21.4",
