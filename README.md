@@ -64,7 +64,7 @@ The following query (or config) options are supported:
  - *partialDirs*: Defines additional directories to be searched for partials. Allows partials to be defined in a directory and used globally without relative paths. See [example](https://github.com/altano/handlebars-loader/tree/master/examples/partialDirs)
  - *ignorePartials*: Prevents partial references from being fetched and bundled. Useful for manually loading partials at runtime.
  - *ignoreHelpers*: Prevents helper references from being fetched and bundled. Useful for manually loading helpers at runtime.
- - *precompileOptions*: Options passed to handlebars precompile. See the Handlebars.js [documentation](http://handlebarsjs.com/reference.html#base-precompile) for more information.
+ - *precompileOptions*: Options passed to handlebars precompile. See the Handlebars.js [documentation](https://handlebarsjs.com/api-reference/compilation.html#handlebars-precompile-template-options) for more information.
  - *config*: Tells the loader where to look in the webpack config for configurations for this loader. Defaults to `handlebarsLoader`.
  - *config.partialResolver* You can specify a function to use for resolving partials. To do so, add to your webpack config:
     ```js
