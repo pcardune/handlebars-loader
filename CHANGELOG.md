@@ -1,9 +1,9 @@
 # Change Log
 
-## [Unreleased]
+## [1.7.2] - 2022-05-18
 
 ### Fixed
-- Your improvement here...
+- Upgraded async dependency to 3.2.2 (#207)
 
 ## [1.7.1] - 2018-12-18
 
