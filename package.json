@@ -36,6 +36,7 @@
     "istanbul": "^0.4.2",
     "mocha": "^1.21.4",
     "npm-release": "^1.0.0",
+    "prettier": "2.6.2",
     "sinon": "^1.10.3"
   },
   "bugs": {
