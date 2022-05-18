@@ -4,18 +4,17 @@ module.exports = {
   entry: "./app.js",
   output: {
     path: "dist",
-    filename: "bundle.js"
+    filename: "bundle.js",
   },
-	module: {
-		loaders: [{ 
-			test: /\.handlebars$/, 
-			loader: __dirname + "/../../", 
-			query: { 
-				helperDirs: [
-					__dirname + "/helpers1",
-					__dirname + "/helpers2",
-				]
-			}
-		}]
-	}
+  module: {
+    loaders: [
+      {
+        test: /\.handlebars$/,
+        loader: __dirname + "/../../",
+        query: {
+          helperDirs: [__dirname + "/helpers1", __dirname + "/helpers2"],
+        },
+      },
+    ],
+  },
 };

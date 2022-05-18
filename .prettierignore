@@ -1,3 +1,4 @@
 # ignore a bunch of stuff
 coverage
 *.handlebars
+examples/**/dist/*

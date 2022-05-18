@@ -8,7 +8,7 @@
 
 A [handlebars](http://handlebarsjs.com) template loader for [webpack](https://github.com/webpack/webpack).
 
-*Handlebars 4 now supported*
+_Handlebars 4 now supported_
 
 ## Installation
 
@@ -53,40 +53,31 @@ A file "/folder/file.handlebars".
 
 The following query (or config) options are supported:
 
- - *helperDirs*: Defines additional directories to be searched for helpers. Allows helpers to be defined in a directory and used globally without relative paths. You must surround helpers in subdirectories with brackets (Handlerbar helper identifiers can't have forward slashes without this). See [example](https://github.com/altano/handlebars-loader/tree/master/examples/helperDirs)
- - *runtime*: Specify the path to the handlebars runtime library. Defaults to look under the local handlebars npm module, i.e. `handlebars/runtime`.
- - *extensions*: Searches for templates with alternate extensions. Defaults are .handlebars, .hbs, and '' (no extension).
- - *inlineRequires*: Defines a regex that identifies strings within helper/partial parameters that should be replaced by inline require statements. **Note**: For this to work, you'll have to disable the `esModule` Option in the corresponding file-loader entry in your webpack config.
- - *rootRelative*: When automatically resolving partials and helpers, use an implied root path if none is present. Default = `./`. Setting this to be empty effectively turns off automatically resolving relative handlebars resources for items like `{{helper}}`. `{{./helper}}` will still resolve as expected.
- - *knownHelpers*: Array of helpers that are registered at runtime and should not explicitly be required by webpack. This helps with interoperability for libraries like Thorax [helpers](http://thoraxjs.org/api.html#template-helpers).
- - *exclude*: Defines a regex that will exclude paths from resolving. This can be used to prevent helpers from being resolved to modules in the `node_modules` directory.
- - *debug*: Shows trace information to help debug issues (e.g. resolution of helpers).
- - *partialDirs*: Defines additional directories to be searched for partials. Allows partials to be defined in a directory and used globally without relative paths. See [example](https://github.com/altano/handlebars-loader/tree/master/examples/partialDirs)
- - *ignorePartials*: Prevents partial references from being fetched and bundled. Useful for manually loading partials at runtime.
- - *ignoreHelpers*: Prevents helper references from being fetched and bundled. Useful for manually loading helpers at runtime.
- - *precompileOptions*: Options passed to handlebars precompile. See the Handlebars.js [documentation](http://handlebarsjs.com/reference.html#base-precompile) for more information.
- - *config*: Tells the loader where to look in the webpack config for configurations for this loader. Defaults to `handlebarsLoader`.
- - *config.partialResolver* You can specify a function to use for resolving partials. To do so, add to your webpack config:
-    ```js
-    handlebarsLoader: {
-        partialResolver: function(partial, callback){
-            // should pass the partial's path on disk
-            // to the callback. Callback accepts (err, locationOnDisk)
-        }
-    }
-    ```
-- *config.helperResolver* You can specify a function to use for resolving helpers. To do so, add to your webpack config:
-    ```js
-    handlebarsLoader: {
-        helperResolver: function(helper, callback){
-            // should pass the helper's path on disk
-            // to the callback if one was found for the given parameter.
-            // Callback accepts (err, locationOnDisk)
-            // Otherwise just call the callback without any arguments
-        }
-    }
-    ```
-See [`webpack`](https://github.com/webpack/webpack) documentation for more information regarding loaders.
+- _helperDirs_: Defines additional directories to be searched for helpers. Allows helpers to be defined in a directory and used globally without relative paths. You must surround helpers in subdirectories with brackets (Handlerbar helper identifiers can't have forward slashes without this). See [example](https://github.com/altano/handlebars-loader/tree/master/examples/helperDirs)
+- _runtime_: Specify the path to the handlebars runtime library. Defaults to look under the local handlebars npm module, i.e. `handlebars/runtime`.
+- _extensions_: Searches for templates with alternate extensions. Defaults are .handlebars, .hbs, and '' (no extension).
+- _inlineRequires_: Defines a regex that identifies strings within helper/partial parameters that should be replaced by inline require statements. **Note**: For this to work, you'll have to disable the `esModule` Option in the corresponding file-loader entry in your webpack config.
+- _rootRelative_: When automatically resolving partials and helpers, use an implied root path if none is present. Default = `./`. Setting this to be empty effectively turns off automatically resolving relative handlebars resources for items like `{{helper}}`. `{{./helper}}` will still resolve as expected.
+- _knownHelpers_: Array of helpers that are registered at runtime and should not explicitly be required by webpack. This helps with interoperability for libraries like Thorax [helpers](http://thoraxjs.org/api.html#template-helpers).
+- _exclude_: Defines a regex that will exclude paths from resolving. This can be used to prevent helpers from being resolved to modules in the `node_modules` directory.
+- _debug_: Shows trace information to help debug issues (e.g. resolution of helpers).
+- _partialDirs_: Defines additional directories to be searched for partials. Allows partials to be defined in a directory and used globally without relative paths. See [example](https://github.com/altano/handlebars-loader/tree/master/examples/partialDirs)
+- _ignorePartials_: Prevents partial references from being fetched and bundled. Useful for manually loading partials at runtime.
+- _ignoreHelpers_: Prevents helper references from being fetched and bundled. Useful for manually loading helpers at runtime.
+- _precompileOptions_: Options passed to handlebars precompile. See the Handlebars.js [documentation](http://handlebarsjs.com/reference.html#base-precompile) for more information.
+- _config_: Tells the loader where to look in the webpack config for configurations for this loader. Defaults to `handlebarsLoader`.
+- _config.partialResolver_ You can specify a function to use for resolving partials. To do so, add to your webpack config:
+  ```js
+  handlebarsLoader: {
+      partialResolver: function(partial, callback){
+          // should pass the partial's path on disk
+          // to the callback. Callback accepts (err, locationOnDisk)
+      }
+  }
+  ```
+- _config.helperResolver_ You can specify a function to use for resolving helpers. To do so, add to your webpack config:
+  `js handlebarsLoader: { helperResolver: function(helper, callback){ // should pass the helper's path on disk // to the callback if one was found for the given parameter. // Callback accepts (err, locationOnDisk) // Otherwise just call the callback without any arguments } } `
+  See [`webpack`](https://github.com/webpack/webpack) documentation for more information regarding loaders.
 
 ## Full examples
 
