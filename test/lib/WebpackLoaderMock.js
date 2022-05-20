@@ -1,8 +1,8 @@
-var fs = require('fs'),
-    path = require('path');
+var fs = require("fs"),
+  path = require("path");
 
-function WebpackLoaderMock (options) {
-  this.context = options.context || '';
+function WebpackLoaderMock(options) {
+  this.context = options.context || "";
   this.query = options.query;
   this.rootContext = options.rootContext || {};
   this._asyncCallback = options.async;
@@ -11,7 +11,7 @@ function WebpackLoaderMock (options) {
 
 WebpackLoaderMock.prototype.resolve = function (context, resource, callback) {
   var stub = this._resolveStubs[resource],
-      fullPath;
+    fullPath;
 
   if (stub) {
     return callback(null, stub);
@@ -21,7 +21,7 @@ WebpackLoaderMock.prototype.resolve = function (context, resource, callback) {
     // TODO: this is pretty hacky, assuming .js files - if we wanted to really
     // mock this out, we'd need to do sort of what the loader _actually_ does:
     // try a bunch of extensions (set via config) until one is found.
-    fullPath = path.join(context, resource + '.js');
+    fullPath = path.join(context, resource + ".js");
     if (fs.existsSync(fullPath)) {
       return callback(null, fullPath);
     }

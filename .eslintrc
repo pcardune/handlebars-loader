@@ -2,14 +2,11 @@
   "env": {
     "node": true
   },
-  "extends": "eslint:recommended",
+  "extends": ["eslint:recommended", "prettier"],
   "rules": {
     "no-console": "off",
-    "indent": ["error", 2, { "VariableDeclarator": { "var": 2, "let": 2, "const": 3 }}],
-    "no-trailing-spaces": "error",
-    "semi": ["error", "always"],
     "no-unused-vars": ["error", { "args": "none" }],
     "comma-dangle": "off",
-    "no-cond-assign": "off",
+    "no-cond-assign": "off"
   }
 }

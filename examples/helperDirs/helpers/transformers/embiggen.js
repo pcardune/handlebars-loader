@@ -1,3 +1,3 @@
-module.exports = function(html) {
-  return '***' + html + '***';
+module.exports = function (html) {
+  return "***" + html + "***";
 };
