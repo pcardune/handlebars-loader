@@ -1,7 +1,7 @@
 [![latest version](https://img.shields.io/npm/v/handlebars-loader.svg?maxAge=2592000)](https://www.npmjs.com/package/handlebars-loader)
 [![downloads](https://img.shields.io/npm/dm/handlebars-loader.svg?maxAge=2592000)](https://www.npmjs.com/package/handlebars-loader)
-[![Build Status](https://travis-ci.org/pcardune/handlebars-loader.svg?branch=master)](https://travis-ci.org/pcardune/handlebars-loader)
-[![Coverage Status](https://coveralls.io/repos/github/pcardune/handlebars-loader/badge.svg?branch=master)](https://coveralls.io/github/pcardune/handlebars-loader?branch=master)
+[![Build Status](https://github.com/pcardune/handlebars-loader/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/pcardune/handlebars-loader/actions/workflows/test.yml)
+[![Coverage Status](https://coveralls.io/repos/github/pcardune/handlebars-loader/badge.svg?branch=main)](https://coveralls.io/github/pcardune/handlebars-loader?branch=main)
 [![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
 
 # handlebars-loader
@@ -53,7 +53,7 @@ A file "/folder/file.handlebars".
 
 The following query (or config) options are supported:
 
-- _helperDirs_: Defines additional directories to be searched for helpers. Allows helpers to be defined in a directory and used globally without relative paths. You must surround helpers in subdirectories with brackets (Handlerbar helper identifiers can't have forward slashes without this). See [example](https://github.com/altano/handlebars-loader/tree/master/examples/helperDirs)
+- _helperDirs_: Defines additional directories to be searched for helpers. Allows helpers to be defined in a directory and used globally without relative paths. You must surround helpers in subdirectories with brackets (Handlerbar helper identifiers can't have forward slashes without this). See [example](https://github.com/altano/handlebars-loader/tree/main/examples/helperDirs)
 - _runtime_: Specify the path to the handlebars runtime library. Defaults to look under the local handlebars npm module, i.e. `handlebars/runtime`.
 - _extensions_: Searches for templates with alternate extensions. Defaults are .handlebars, .hbs, and '' (no extension).
 - _inlineRequires_: Defines a regex that identifies strings within helper/partial parameters that should be replaced by inline require statements. **Note**: For this to work, you'll have to disable the `esModule` Option in the corresponding file-loader entry in your webpack config.
@@ -61,10 +61,10 @@ The following query (or config) options are supported:
 - _knownHelpers_: Array of helpers that are registered at runtime and should not explicitly be required by webpack. This helps with interoperability for libraries like Thorax [helpers](http://thoraxjs.org/api.html#template-helpers).
 - _exclude_: Defines a regex that will exclude paths from resolving. This can be used to prevent helpers from being resolved to modules in the `node_modules` directory.
 - _debug_: Shows trace information to help debug issues (e.g. resolution of helpers).
-- _partialDirs_: Defines additional directories to be searched for partials. Allows partials to be defined in a directory and used globally without relative paths. See [example](https://github.com/altano/handlebars-loader/tree/master/examples/partialDirs)
+- _partialDirs_: Defines additional directories to be searched for partials. Allows partials to be defined in a directory and used globally without relative paths. See [example](https://github.com/altano/handlebars-loader/tree/main/examples/partialDirs)
 - _ignorePartials_: Prevents partial references from being fetched and bundled. Useful for manually loading partials at runtime.
 - _ignoreHelpers_: Prevents helper references from being fetched and bundled. Useful for manually loading helpers at runtime.
-- _precompileOptions_: Options passed to handlebars precompile. See the Handlebars.js [documentation](http://handlebarsjs.com/reference.html#base-precompile) for more information.
+- _precompileOptions_: Options passed to handlebars precompile. See the Handlebars.js [documentation](https://handlebarsjs.com/api-reference/compilation.html#handlebars-compile-template-options) for more information.
 - _config_: Tells the loader where to look in the webpack config for configurations for this loader. Defaults to `handlebarsLoader`.
 - _config.partialResolver_ You can specify a function to use for resolving partials. To do so, add to your webpack config:
   ```js
@@ -85,7 +85,7 @@ See the [examples](examples/) folder in this repo. The examples are fully runnab
 
 ## Change Log
 
-See the [CHANGELOG.md](https://github.com/pcardune/handlebars-loader/blob/master/CHANGELOG.md) file.
+See the [CHANGELOG.md](https://github.com/pcardune/handlebars-loader/blob/main/CHANGELOG.md) file.
 
 ## License
 
