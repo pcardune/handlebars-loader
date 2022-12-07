@@ -12,7 +12,7 @@
   "dependencies": {
     "async": "^3.2.2",
     "fastparse": "^1.0.0",
-    "loader-utils": "1.0.x",
+    "loader-utils": "1.4.x",
     "object-assign": "^4.1.0"
   },
   "peerDependencies": {
