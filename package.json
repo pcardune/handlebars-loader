@@ -32,7 +32,7 @@
   "devDependencies": {
     "eslint": "^8.15.0",
     "eslint-config-prettier": "^8.5.0",
-    "html-loader": "^0.3.0",
+    "html-loader": "^4.2.0",
     "istanbul": "^0.4.2",
     "mocha": "^10.0.0",
     "npm-release": "^1.0.0",
