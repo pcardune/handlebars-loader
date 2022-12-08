@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.7.3] - 2022-12-07
+
+### Fixed
+
+- Upgraded loader-utils dependendency to 1.4.2, which fixes a critical vulnerability
+
 ## [1.7.2] - 2022-05-18
 
 ### Fixed
