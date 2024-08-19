@@ -6,3 +6,4 @@ example/dist/
 obj/
 .ntvs_analysis.dat.tmp
 coverage
+/.idea

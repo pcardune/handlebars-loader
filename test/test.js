@@ -6,6 +6,7 @@ var assert = require("assert"),
   sinon = require("sinon"),
   loader = require("../"),
   WebpackLoaderMock = require("./lib/WebpackLoaderMock"),
+  srcset = require("../lib/srcset"),
   TEST_TEMPLATE_DATA = {
     title: "Title",
     description: "Description",
@@ -433,8 +434,10 @@ describe("handlebars-loader", function () {
           "./image": function (text) {
             return "Image URL: " + text;
           },
-          "images/path/to/image":
-            "http://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50",
+          "images/path/to/image": "http://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50",
+          "images/path/to/200/image": "http://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50",
+          "images/path/to/400/image": "http://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50",
+          "images/path/to/2x/image": "http://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50",
         },
       },
       function (err, output, require) {
@@ -442,6 +445,18 @@ describe("handlebars-loader", function () {
         assert.ok(
           require.calledWith("images/path/to/image"),
           "should have required image path"
+        );
+        assert.ok(
+            require.calledWith("images/path/to/200/image"),
+            "should have required srcset 200w image path"
+        );
+        assert.ok(
+            require.calledWith("images/path/to/400/image"),
+            "should have required srcset 400w image path"
+        );
+        assert.ok(
+            require.calledWith("images/path/to/2x/image"),
+            "should have required srcset 2x image path"
         );
         done();
       }
@@ -786,5 +801,33 @@ describe("handlebars-loader", function () {
         done();
       }
     );
+  });
+
+  describe('srcset', function () {
+    it('matches src attributes on a simple image path', function () {
+      assert.ok(srcset.hasSrcsetProperties('image.jpg 400w'));
+      assert.ok(srcset.hasSrcsetProperties('image.jpg 20000w'));
+      assert.ok(srcset.hasSrcsetProperties('image.jpg 2x'));
+      assert.ok(srcset.hasSrcsetProperties('image.jpg 10x'));
+      assert.ok(srcset.hasSrcsetProperties('image.jpg 400w, image2.jpg 800w'));
+      assert.ok(srcset.hasSrcsetProperties('image.jpg 400w, image2.jpg 2x'));
+      assert.ok(srcset.hasSrcsetProperties('image.jpg 400w, image2.jpg 800w, image2.jpg 2x, image2.jpg 20x'));
+    });
+
+    it('should not match any src attributes', function () {
+      assert.equal(srcset.hasSrcsetProperties('image400w.jpg'), false);
+      assert.equal(srcset.hasSrcsetProperties('image 400w.jpg'), false);
+      assert.equal(srcset.hasSrcsetProperties('image2x.jpg'), false);
+      assert.equal(srcset.hasSrcsetProperties('image 2x.jpg'), false);
+      assert.equal(srcset.hasSrcsetProperties('image,400w.jpg'), false);
+      assert.equal(srcset.hasSrcsetProperties('image_400w,.jpg'), false);
+    });
+
+    it('is aware of edge case limitations', function () {
+      // The following should not be ok
+      assert.ok(srcset.hasSrcsetProperties('image 400w,.jpg'));
+      assert.ok(srcset.hasSrcsetProperties('image 400w ,hello.jpg'));
+      assert.ok(srcset.hasSrcsetProperties('image 2x ,.jpg'));
+    })
   });
 });

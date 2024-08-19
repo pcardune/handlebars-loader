@@ -6,6 +6,7 @@ var path = require("path");
 var assign = require("object-assign");
 var fastreplace = require("./lib/fastreplace");
 var findNestedRequires = require("./lib/findNestedRequires");
+var srcset = require("./lib/srcset");
 
 function versionCheck(hbCompiler, hbRuntime) {
   return (
@@ -143,11 +144,27 @@ module.exports = function (source) {
       if (str.indexOf && str.indexOf('"') === 0) {
         var replacements = findNestedRequires(str, inlineRequires);
         str = fastreplace(str, replacements, function (match) {
-          return (
-            '" + require(' +
-            loaderUtils.stringifyRequest(loaderApi, match) +
-            ') + "'
-          );
+          if (srcset.hasSrcsetProperties(match)) {
+            var requireList = [];
+            var matchList = match.matchAll(new RegExp(srcset.srcsetRegex, 'g'));
+            var startIndex = 0;
+
+            Array.from(matchList).forEach(function(item) {
+              var srcsetMatch = item[0];
+              var srcsetPath = item.input.substring(startIndex, item.index).trim();
+              var srcsetProperty = srcsetMatch.replace(',', '').trim();
+              requireList.push('" + require(' +
+                  loaderUtils.stringifyRequest(loaderApi, srcsetPath) +
+                  ') + " ' + srcsetProperty);
+              startIndex = item.index + srcsetMatch.length;
+            });
+
+            return requireList.join(', ');
+          }
+
+          return '" + require(' +
+              loaderUtils.stringifyRequest(loaderApi, match) +
+              ') + "';
         });
       }
       return JavaScriptCompiler.prototype.appendToBuffer.apply(this, arguments);
